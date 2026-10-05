@@ -1206,6 +1206,8 @@ let DATA=__r.data;
               if (Math.abs(mid - sunUp.rise) <= 1.5 || Math.abs(mid - sunUp.set) <= 1.5) s += 10;
             } else if (prof.light === 'night') {
               if (mid >= sunUp.set - 1 || mid <= sunUp.rise + 1) s += 12;
+            } else if (prof.light === 'day') {
+              if (mid >= sunUp.rise && mid <= sunUp.set) s += 10; else s -= 15;
             }
           }
           if (prof.tide === 'rising' && rate > .05) s += 10;
@@ -1228,7 +1230,7 @@ let DATA=__r.data;
       return {start:best.start, end:best.end, label:`${best.start}:00–${best.end}:00`};
     }
     const FISH_SPECIES = [
-      {name:'黑鱼',english:'Tautog',months:[4,5,10,11],temp:[50,62],note:'秋季正季，礁石区用蟹做饵'},
+      {name:'黑鱼',english:'Tautog',months:[4,5,10,11],temp:[50,62],note:'秋季正季，礁石区用蟹做饵，只白天开口'},
       {name:'条纹鲈',english:'Striped Bass',months:[4,5,6,9,10,11],temp:[55,68],note:'春秋洄游季'},
       {name:'蓝鱼',english:'Bluefish',months:[5,6,7,8,9,10,11],temp:[60,75],note:'凶猛，群游'},
       {name:'黑海鲈',english:'Black Sea Bass',months:[5,6,7,8,9,10,11,12],temp:[58,70],note:'礁石沉船区'},
@@ -1237,7 +1239,7 @@ let DATA=__r.data;
       {name:'弱鱼',english:'Weakfish',months:[5,6,7,8,9],temp:[62,72],note:'晨昏窗口'}
     ];
     const SPECIES_PROFILE = {
-      '黑鱼': {temp:[50,62], tide:'rising', light:null},
+      '黑鱼': {temp:[50,62], tide:'rising', light:'day'},
       '条纹鲈': {temp:[55,68], tide:'moving', light:'dawndusk'},
       '蓝鱼': {temp:[60,75], tide:'moving', light:null},
       '黑海鲈': {temp:[58,70], tide:'moving', light:null},
