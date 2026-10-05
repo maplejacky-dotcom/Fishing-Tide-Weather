@@ -890,7 +890,7 @@ function __initPublicFeatures() {
 }
 
 
-const __CACHE_KEY='fishing_public_live_v2';
+const __CACHE_KEY='fishing_public_live_v3';
 const __CACHE_TTL=3600*1000;
 function __etParts(d){
   const p=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);
@@ -945,8 +945,8 @@ function __interpHourly(hilo,dayYMD){
 function __pick(o,keys){ const r={}; for(const k of keys) r[k]=o[k]; return r; }
 async function __fetchSpot(meta,beginYMD,endYMD,dayYMD){
   const wxQ=new URLSearchParams({latitude:meta.lat,longitude:meta.lng,
-    current:'temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m',
-    hourly:'temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m',
+    current:'temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl',
+    hourly:'temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl',
     daily:'weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,wind_speed_10m_max,precipitation_probability_max,wind_direction_10m_dominant',
     temperature_unit:'fahrenheit',wind_speed_unit:'mph',precipitation_unit:'inch',
     timezone:'America/New_York',forecast_days:'7'}).toString();
@@ -1359,6 +1359,15 @@ let DATA=__r.data;
       if (fraction < .53) return '满月';
       if (fraction < .72) return '亏凸月';
       if (fraction < .78) return '下弦月';
+    function solunar(dateString) {
+      const date = new Date(`${dateString}T12:00:00-04:00`);
+      const known = new Date('2000-01-06T18:14:00Z');
+      const age = (((date - known) / 86400000) % 29.53058867 + 29.53058867) % 29.53058867;
+      const transit = (12 + age * .8412) % 24;
+      const fmt = h => { h = ((h % 24) + 24) % 24; return `${Math.floor(h)}:${String(Math.floor((h % 1) * 60)).padStart(2,'0')}`; };
+      const span = (center, half) => `${fmt(center - half)}–${fmt(center + half)}`;
+      return {major:[span(transit,1), span(transit + 12.42,1)], minor:[span(transit - 6.21,.5), span(transit + 6.21,.5)]};
+    }
       return '残月';
     }
     function weekday(date) {
@@ -1450,6 +1459,15 @@ let DATA=__r.data;
       const selectedSea = seaTemperatureForDate(spot,selectedDate);
       const events = tideEventsForDate(spot,selectedDate);
       const bwSel = bestWindow(spot,selectedDate);
+      const sol = solunar(selectedDate);
+      const pNow = Number(c.pressure_msl);
+      const pHist = spot.weather.hourly.pressure_msl || [];
+      const pRef = Number(pHist[Math.max(0,d.wi - 3)]);
+      const pDelta = (Number.isFinite(pNow) && Number.isFinite(pRef)) ? pNow - pRef : NaN;
+      const pTrend = !Number.isFinite(pDelta) ? '' : pDelta > .7 ? '↑ 上升' : pDelta < -.7 ? '↓ 下降' : '→ 平稳';
+      const pLine = Number.isFinite(pNow)
+        ? `<div class="now-stat"><span>气压</span><b>${Math.round(pNow)} hPa</b>${pTrend ? `<small class="gust-line">近3小时 ${pTrend}</small>` : ''}</div>`
+        : '';
       const highs = events.filter(x => x.type === 'H').length;
       const lows = events.filter(x => x.type === 'L').length;
       const tideStatus = selectedIndex === 0
@@ -1465,6 +1483,7 @@ let DATA=__r.data;
           <div class="now-stat"><span>风向 / 风速</span><b>${windReading(c.wind_direction_10m,c.wind_speed_10m)}</b><small class="gust-line">阵风 ${n(c.wind_gusts_10m,0)} mph</small></div>
           <div class="now-stat"><span>浪 / 涌浪</span><b>${n(d.wave)} / ${n(d.swell)} ft</b></div>
           <div class="now-stat"><span>海水温度</span><b>${n(d.sea,0)}°F</b></div>
+          ${pLine}
         </div>
         <p class="advice" id="day-advice">${esc(selectedAdvice.advice)} <small>出钓建议仅供参考。</small></p>
       </article>
@@ -1472,6 +1491,7 @@ let DATA=__r.data;
         <section class="panel chart-panel"><h2>${Number(selectedDate.slice(5,7))}月${Number(selectedDate.slice(8,10))}日潮汐</h2><p class="panel-sub">${curveNote}</p><div class="date-strip" aria-label="选择潮汐日期">${makeDateStrip(spot,selectedIndex)}</div><div class="chart-wrap"><canvas id="tide-chart" role="img" aria-label="${esc(spot.name)} ${esc(selectedDate)} 潮汐曲线"></canvas></div><div class="legend"><span><i></i>潮位曲线</span><span><i class="gold"></i>高潮 / 低潮</span></div></section>
         <section class="panel"><h2>当天高低潮</h2><p class="panel-sub">${weekday(selectedDate)} · 美国东部时间</p><div class="tide-table">${makeTideEvents(spot,selectedDate)}</div><p class="best-window">最佳出钓窗口 <b>${bwSel ? bwSel.label : '暂无'}</b> <span style="color:var(--muted)">· 涨潮+风浪综合</span></p></section>
         <section class="panel"><h2>今天的光照与月相</h2><p class="panel-sub">适合安排清晨和傍晚窗口</p><div class="sun-moon"><div><span>日出</span><b>${timeOnly(daily.sunrise[0])}</b></div><div><span>日落</span><b>${timeOnly(daily.sunset[0])}</b></div><div><span>月相</span><b>${moonPhase(daily.time[0])}</b></div></div></section>
+        <section class="panel"><h2>鱼口活跃时段</h2><p class="panel-sub">${Number(selectedDate.slice(5,7))}月${Number(selectedDate.slice(8,10))}日 · ${moonPhase(selectedDate)} · 天文估算，仅供参考</p><div class="sun-moon"><div><span>大咬口</span><b>${sol.major[0]}</b></div><div><span>大咬口</span><b>${sol.major[1]}</b></div><div><span>小咬口</span><b>${sol.minor[0]}</b></div><div><span>小咬口</span><b>${sol.minor[1]}</b></div></div></section>
         <section class="panel season-panel"><h2>时令鱼种参考</h2><p class="panel-sub">${Number(selectedDate.slice(5,7))}月${Number(selectedDate.slice(8,10))}日 · ${spotState(spot)} 法规 · 当天平均海温 ${Number.isFinite(selectedSea) ? `${n(selectedSea,0)}°F` : '暂无'}</p><div class="fish-list">${makeFishList(spot,selectedDate)}</div><p class="fish-footnote">根据季节与水温推测，仅供参考。${regulationSources()}</p></section>
       </div>
       <section class="panel"><h2>未来 24 小时</h2><p class="panel-sub">逐小时天气、风、浪、涌浪和海水温度</p><div class="hour-grid">${makeHours(spot,d)}</div></section>
