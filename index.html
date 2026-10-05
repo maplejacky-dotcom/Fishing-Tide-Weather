@@ -478,6 +478,17 @@ function __parseMapsLink(raw) {
   return { lat: c.lat, lng: c.lng, label: __mapsLabel(u) || (c.lat.toFixed(5) + ', ' + c.lng.toFixed(5)) };
 }
 
+/* ---------- private spot-add log (owner only) ---------- */
+const PF_LOG_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdbouebGYgQ9IMh3K8RTBRraFoeqc21HbcG2yet0dUUA-I7Gg/formResponse';
+const PF_LOG_ENTRY = 'entry.426974509';
+function __logSpot(c) {
+  try {
+    const body = new URLSearchParams();
+    body.set(PF_LOG_ENTRY, c.name + ' | ' + c.lat + ', ' + c.lng + ' | ' + c.stationName + ' (' + c.station + ') | ' + c.regulationState);
+    fetch(PF_LOG_URL, { method: 'POST', mode: 'no-cors', body }).catch(() => {});
+  } catch (e) {}
+}
+
 /* ---------- sheets ---------- */
 const PF_REG_LABELS = { NY: 'NY \u7ebd\u7ea6\u5dde', NJ: 'NJ \u65b0\u6cfd\u897f\u5dde', RI: 'RI \u7f57\u5fb7\u5c9b\u5dde', OTHER: '\u5176\u4ed6' };
 function __regPickerHTML(value, note, group) {
@@ -657,14 +668,16 @@ function __openAddSpot() {
     const st = state.stations.find(s => s.id === state.stationId) || state.stations[0];
     const btn = $('#pf-save');
     btn.disabled = true; btn.textContent = '\u4fdd\u5b58\u4e2d\u2026';
-    PF.customSpots.push({
+    const custom = {
       id: 'c' + Date.now().toString(36),
       name: name.slice(0, 40),
       station: st.id, stationName: st.name, stationDistanceKm: Math.round(st.d * 10) / 10,
       lat: Math.round(state.loc.lat * 1e6) / 1e6, lng: Math.round(state.loc.lng * 1e6) / 1e6,
       regulationState: __readReg(bd)
-    });
+    };
+    PF.customSpots.push(custom);
     __pfSave();
+    __logSpot(custom);
     await __refreshSpots();
   });
 }
