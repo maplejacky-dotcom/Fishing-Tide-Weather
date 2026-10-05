@@ -1271,11 +1271,6 @@ let DATA=__r.data;
       document.getElementById('updated-footer').textContent = `数据更新时间：${stamp()}。所有时间均为美国东部时间，潮位基准为 MLLW，单位为英尺。`;
       const ranked = DATA.spots.map((spot,index) => ({spot,index,d:derive(spot)})).sort((a,b) => {
         if (PF.sortMode === 'custom') return __pfPos(a.spot) - __pfPos(b.spot);
-        const pinOrder = {'225':0,'Belmar 飞机石':1};
-        const aPinned = Object.hasOwn(pinOrder,a.spot.name);
-        const bPinned = Object.hasOwn(pinOrder,b.spot.name);
-        if (aPinned && bPinned) return pinOrder[a.spot.name] - pinOrder[b.spot.name];
-        if (aPinned !== bPinned) return aPinned ? -1 : 1;
         return b.d.score - a.d.score;
       });
       if (!ranked.length) {
