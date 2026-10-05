@@ -1174,7 +1174,7 @@ let DATA=__r.data;
       const sol = solunar(dateStr);
       const prof = speciesName ? SPECIES_PROFILE[speciesName] : null;
       let sunUp = null;
-      if (prof && prof.light === 'dawndusk') {
+      if (prof && prof.light) {
         const di = (spot.weather.daily?.time || []).indexOf(dateStr);
         if (di >= 0) {
           const toH = t => { const m = /T(\d{2}):(\d{2})/.exec(t || ''); return m ? +m[1] + (+m[2]) / 60 : null; };
@@ -1202,9 +1202,14 @@ let DATA=__r.data;
           }
           if (sunUp) {
             const mid = cur.h + .5;
-            if (Math.abs(mid - sunUp.rise) <= 1.5 || Math.abs(mid - sunUp.set) <= 1.5) s += 10;
+            if (prof.light === 'dawndusk') {
+              if (Math.abs(mid - sunUp.rise) <= 1.5 || Math.abs(mid - sunUp.set) <= 1.5) s += 10;
+            } else if (prof.light === 'night') {
+              if (mid >= sunUp.set - 1 || mid <= sunUp.rise + 1) s += 12;
+            }
           }
-          if (prof.tide === 'change' && Math.abs(rate) < .08) s += 8;
+          if (prof.tide === 'rising' && rate > .05) s += 10;
+          if (prof.tide === 'rising' && Math.abs(rate) < .08) s += 6;
         }
         const prev = hours[Math.max(0, k - 3)];
         if (prev !== cur && Number.isFinite(cur.pres) && Number.isFinite(prev.pres)) {
@@ -1232,13 +1237,13 @@ let DATA=__r.data;
       {name:'弱鱼',english:'Weakfish',months:[5,6,7,8,9],temp:[62,72],note:'晨昏窗口'}
     ];
     const SPECIES_PROFILE = {
-      '黑鱼': {temp:[50,62], tide:'change', light:null},
+      '黑鱼': {temp:[50,62], tide:'rising', light:null},
       '条纹鲈': {temp:[55,68], tide:'moving', light:'dawndusk'},
       '蓝鱼': {temp:[60,75], tide:'moving', light:null},
       '黑海鲈': {temp:[58,70], tide:'moving', light:null},
       '美洲鲷': {temp:[60,70], tide:'moving', light:null},
       '夏季比目鱼': {temp:[60,72], tide:'moving', light:null},
-      '弱鱼': {temp:[62,72], tide:'moving', light:'dawndusk'}
+      '弱鱼': {temp:[62,72], tide:'moving', light:'night'}
     };
     const FISH_REGULATIONS = {
       NY: {
