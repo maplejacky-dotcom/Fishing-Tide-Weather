@@ -891,7 +891,7 @@ function __initPublicFeatures() {
 }
 
 
-const __CACHE_KEY='fishing_public_live_v3';
+const __CACHE_KEY='fishing_public_live_v4';
 const __CACHE_TTL=3600*1000;
 function __etParts(d){
   const p=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);
@@ -978,8 +978,8 @@ async function __fetchSpot(meta,beginYMD,endYMD,dayYMD){
   spot.status='ok'; spot.errors=[];
   spot.tide={hilo:hiloJ.predictions.map(p=>({t:p.t,v:p.v,type:p.type})),hourly:hourlyTide};
   spot.weather={
-    current:__pick(wxJ.current,['time','interval','temperature_2m','weather_code','wind_speed_10m','wind_direction_10m','wind_gusts_10m']),
-    hourly:__pick(wxJ.hourly,['time','temperature_2m','precipitation_probability','weather_code','wind_speed_10m','wind_direction_10m','wind_gusts_10m']),
+    current:__pick(wxJ.current,['time','interval','temperature_2m','weather_code','wind_speed_10m','wind_direction_10m','wind_gusts_10m','pressure_msl']),
+    hourly:__pick(wxJ.hourly,['time','temperature_2m','precipitation_probability','weather_code','wind_speed_10m','wind_direction_10m','wind_gusts_10m','pressure_msl']),
     daily:__pick(wxJ.daily,['time','weather_code','temperature_2m_max','temperature_2m_min','sunrise','sunset','wind_speed_10m_max','precipitation_probability_max','wind_direction_10m_dominant'])
   };
   spot.marine={hourly:__pick(marJ.hourly,['time','wave_height','swell_wave_height','swell_wave_direction','sea_surface_temperature'])};
