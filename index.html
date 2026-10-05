@@ -1221,13 +1221,24 @@ let DATA=__r.data;
         return s;
       };
       let best = null;
+      const allWin = [];
       for (let i = 0; i + 2 < hours.length; i++) {
         if (hours[i+1].h !== hours[i].h + 1 || hours[i+2].h !== hours[i+1].h + 1) continue;
         const s = scoreHour(i) + scoreHour(i + 1) + scoreHour(i + 2);
-        if (!best || s > best.s) best = {s, start:hours[i].h, end:hours[i+2].h + 1};
+        const w = {s, start:hours[i].h, end:hours[i+2].h + 1};
+        allWin.push(w);
+        if (!best || s > best.s) best = w;
       }
       if (!best) return null;
-      return {start:best.start, end:best.end, label:`${best.start}:00–${best.end}:00`};
+      let second = null;
+      for (const w of allWin) {
+        if (w === best) continue;
+        if (w.start < best.end && best.start < w.end) continue;
+        if (!second || w.s > second.s) second = w;
+      }
+      const r = {start:best.start, end:best.end, label:`${best.start}:00–${best.end}:00`};
+      if (second) { r.secondStart = second.start; r.secondEnd = second.end; r.secondLabel = `${second.start}:00–${second.end}:00`; }
+      return r;
     }
     const FISH_SPECIES = [
       {name:'黑鱼',english:'Tautog',months:[4,5,10,11],temp:[50,62],note:'秋季正季，礁石区用蟹做饵，只白天开口'},
@@ -1334,7 +1345,7 @@ let DATA=__r.data;
         return `<div class="fish-row">
           <span class="fish-rank">${index+1}</span>
           <div class="fish-name"><b>${esc(fish.name)}</b><small>${esc(fish.english)}</small></div>
-          <div class="fish-info">${regulation}<span class="fish-note">${esc(fish.note)}</span>${(() => { const fbw = bestWindow(spot, date, fish.name); return fbw ? `<span class="fish-window">最佳 ${fbw.label}</span>` : ''; })()}</div>
+          <div class="fish-info">${regulation}<span class="fish-note">${esc(fish.note)}</span>${(() => { const fbw = bestWindow(spot, date, fish.name); return fbw ? `<span class="fish-window">最佳 ${fbw.label}${fbw.secondLabel ? ' · 次佳 ' + fbw.secondLabel : ''}</span>` : ''; })()}</div>
         </div>`;
       }).join('');
     }
@@ -1385,7 +1396,7 @@ let DATA=__r.data;
             <div class="metric"><span>海温</span><b>${n(d.sea,0)}°F</b></div>
           </div>
           <p class="season-line">时令：<strong>${esc(currentFish.name)}</strong></p>
-          <p class="best-window">今日最佳窗口 <b>${bwToday ? bwToday.label : '暂无'}</b></p>
+          <p class="best-window">今日最佳窗口 <b>${bwToday ? bwToday.label : '暂无'}</b>${bwToday && bwToday.secondLabel ? ` · 次佳 <b>${bwToday.secondLabel}</b>` : ''}</p>
           <p class="recommend">${esc(d.advice)} <span>仅供参考</span></p>
           ${spot.isCustom?`<button type="button" class="pf-card-manage" data-pf-manage="${esc(spot.pid)}">管理</button>`:''}
         </div>`;
@@ -1543,7 +1554,7 @@ let DATA=__r.data;
       </article>
       <div class="detail-layout">
         <section class="panel chart-panel"><h2>${Number(selectedDate.slice(5,7))}月${Number(selectedDate.slice(8,10))}日潮汐</h2><p class="panel-sub">${curveNote}</p><div class="date-strip" aria-label="选择潮汐日期">${makeDateStrip(spot,selectedIndex)}</div><div class="chart-wrap"><canvas id="tide-chart" role="img" aria-label="${esc(spot.name)} ${esc(selectedDate)} 潮汐曲线"></canvas></div><div class="legend"><span><i></i>潮位曲线</span><span><i class="gold"></i>高潮 / 低潮</span></div></section>
-        <section class="panel"><h2>当天高低潮</h2><p class="panel-sub">${weekday(selectedDate)} · 美国东部时间</p><div class="tide-table">${makeTideEvents(spot,selectedDate)}</div><p class="best-window">最佳出钓窗口 <b>${bwSel ? bwSel.label : '暂无'}</b> <span style="color:var(--muted)">· 潮汐·风浪·气压·鱼口综合</span></p></section>
+        <section class="panel"><h2>当天高低潮</h2><p class="panel-sub">${weekday(selectedDate)} · 美国东部时间</p><div class="tide-table">${makeTideEvents(spot,selectedDate)}</div><p class="best-window">最佳出钓窗口 <b>${bwSel ? bwSel.label : '暂无'}</b>${bwSel && bwSel.secondLabel ? ` · 次佳 <b>${bwSel.secondLabel}</b>` : ''} <span style="color:var(--muted)">· 潮汐·风浪·气压·鱼口综合</span></p></section>
         <section class="panel"><h2>今天的光照与月相</h2><p class="panel-sub">适合安排清晨和傍晚窗口</p><div class="sun-moon"><div><span>日出</span><b>${timeOnly(daily.sunrise[0])}</b></div><div><span>日落</span><b>${timeOnly(daily.sunset[0])}</b></div><div><span>月相</span><b>${moonPhase(daily.time[0])}</b></div></div></section>
         <section class="panel"><h2>鱼口活跃时段</h2><p class="panel-sub">${Number(selectedDate.slice(5,7))}月${Number(selectedDate.slice(8,10))}日 · ${moonPhase(selectedDate)} · 天文估算，仅供参考</p><div class="sun-moon"><div><span>大咬口</span><b>${sol.major[0]}</b></div><div><span>大咬口</span><b>${sol.major[1]}</b></div><div><span>小咬口</span><b>${sol.minor[0]}</b></div><div><span>小咬口</span><b>${sol.minor[1]}</b></div></div></section>
         <section class="panel season-panel"><h2>时令鱼种参考</h2><p class="panel-sub">${Number(selectedDate.slice(5,7))}月${Number(selectedDate.slice(8,10))}日 · ${spotState(spot)} 法规 · 当天平均海温 ${Number.isFinite(selectedSea) ? `${n(selectedSea,0)}°F` : '暂无'}</p><div class="fish-list">${makeFishList(spot,selectedDate)}</div><p class="fish-footnote">根据季节与水温推测，仅供参考。${regulationSources()}</p></section>
