@@ -450,12 +450,16 @@ function __coordPair(v) {
   return (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) ? { lat, lng } : null;
 }
 function __mapsCoords(u) {
+  // 1. data=...!3d<lat>!4d<lng> — canonical place location (most precise)
+  const dv = u.searchParams.get('data') || '';
+  let dm = dv.match(/!3d(-?\d{1,2}(?:\.\d+)?)!4d(-?\d{1,3}(?:\.\d+)?)/);
+  if (!dm) dm = decodeURIComponent(u.pathname).match(/!3d(-?\d{1,2}(?:\.\d+)?)!4d(-?\d{1,3}(?:\.\d+)?)/);
+  if (dm) { const c = __coordPair(dm[1] + ',' + dm[2]); if (c) return c; }
+  // 2. /@<lat>,<lng>,<zoom>z — map viewport center
   const at = decodeURIComponent(u.pathname).match(/\/@(-?\d{1,2}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?),/);
   if (at) { const c = __coordPair(at[1] + ',' + at[2]); if (c) return c; }
+  // 3. q / query / ll params
   for (const k of ['q', 'query', 'll']) { const c = __coordPair(u.searchParams.get(k)); if (c) return c; }
-  const dv = u.searchParams.get('data') || decodeURIComponent(u.pathname);
-  const dm = dv.match(/!3d(-?\d{1,2}(?:\.\d+)?)!4d(-?\d{1,3}(?:\.\d+)?)/);
-  if (dm) return __coordPair(dm[1] + ',' + dm[2]);
   return null;
 }
 function __mapsLabel(u) {
@@ -467,15 +471,35 @@ function __mapsLabel(u) {
   }
   return label ? label.slice(0, 80) : null;
 }
-function __parseMapsLink(raw) {
-  let u;
-  try { u = new URL(raw.trim()); } catch (e) { return { error: '\u94fe\u63a5\u65e0\u6548\uff0c\u8bf7\u68c0\u67e5\u540e\u91cd\u8bd5' }; }
+function __parseMapsUrl(u) {
   if (u.protocol !== 'https:') return { error: '\u94fe\u63a5\u65e0\u6548\uff0c\u8bf7\u68c0\u67e5\u540e\u91cd\u8bd5' };
-  if (u.hostname === 'maps.app.goo.gl') return { error: '\u77ed\u94fe\u63a5\u5728\u7f51\u9875\u7248\u65e0\u6cd5\u76f4\u63a5\u89e3\u6790\uff1a\u8bf7\u7528 Google Maps \u6253\u5f00\u8be5\u94fe\u63a5\uff0c\u518d\u590d\u5236\u6d4f\u89c8\u5668\u5730\u5740\u680f\u7684\u5b8c\u6574\u94fe\u63a5\u7c98\u8d34\u5230\u8fd9\u91cc' };
   if (!['google.com', 'www.google.com', 'maps.google.com'].includes(u.hostname)) return { error: '\u8bf7\u8f93\u5165 Google Maps \u5206\u4eab\u94fe\u63a5' };
   const c = __mapsCoords(u);
   if (!c) return { error: '\u94fe\u63a5\u91cc\u6ca1\u6709\u627e\u5230\u5750\u6807\uff0c\u8bf7\u68c0\u67e5\u94fe\u63a5\u662f\u5426\u6709\u6548\uff0c\u6216\u6539\u7528\u641c\u5730\u540d/\u8f93\u7ecf\u7eac\u5ea6' };
   return { lat: c.lat, lng: c.lng, label: __mapsLabel(u) || (c.lat.toFixed(5) + ', ' + c.lng.toFixed(5)) };
+}
+function __parseMapsLink(raw) {
+  let u;
+  try { u = new URL(raw.trim()); } catch (e) { return { error: '\u94fe\u63a5\u65e0\u6548\uff0c\u8bf7\u68c0\u67e5\u540e\u91cd\u8bd5' }; }
+  if (u.hostname === 'maps.app.goo.gl') return { short: true, url: u.toString() };
+  return __parseMapsUrl(u);
+}
+async function __resolveShortLink(shortUrl) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 15000);
+  try {
+    const r = await fetch('https://unshorten.me/json/' + shortUrl, { signal: ctrl.signal });
+    if (!r.ok) return null;
+    const j = await r.json();
+    if (!j || !j.success || !j.resolved_url) return null;
+    let target = j.resolved_url;
+    try {
+      const u = new URL(target);
+      if (u.hostname === 'consent.google.com' && u.searchParams.get('continue')) target = u.searchParams.get('continue');
+    } catch (e) {}
+    return target;
+  } catch (e) { return null; }
+  finally { clearTimeout(timer); }
 }
 
 /* ---------- private spot-add log (owner only) ---------- */
@@ -547,7 +571,7 @@ function __openAddSpot() {
     '<button type="button" id="pf-coords-go" class="pf-btn">\u5339\u914d\u6f6e\u6c50\u7ad9</button></div>' +
     '<div class="pf-pane" data-pane="maps" hidden><form id="pf-maps-form" class="pf-col">' +
     '<label class="pf-field"><span>Google Maps \u5206\u4eab\u94fe\u63a5</span>' +
-    '<input id="pf-maps-link" type="url" placeholder="\u7c98\u8d34 google.com/maps \u5b8c\u6574\u94fe\u63a5\uff08\u77ed\u94fe\u63a5\u8bf7\u5148\u5728\u6d4f\u89c8\u5668\u6253\u5f00\u518d\u590d\u5236\u5730\u5740\u680f\uff09"></label>' +
+    '<input id="pf-maps-link" type="url" placeholder="\u7c98\u8d34 maps.app.goo.gl \u77ed\u94fe\u63a5\u6216 google.com/maps \u94fe\u63a5"></label>' +
     '<button type="submit" class="pf-btn">\u89e3\u6790\u94fe\u63a5</button></form></div>' +
     '<div class="pf-pane" data-pane="current" hidden><p class="pf-note">\u4f7f\u7528\u8bbe\u5907\u4f4d\u7f6e\u53ea\u7528\u4e8e\u5339\u914d\u5929\u6c14\u3001\u6d77\u51b5\u548c\u9644\u8fd1\u6f6e\u6c50\u7ad9\u3002</p>' +
     '<button type="button" id="pf-geo-go" class="pf-btn">\u4f7f\u7528\u6211\u7684\u5f53\u524d\u4f4d\u7f6e</button></div>' +
@@ -639,12 +663,29 @@ function __openAddSpot() {
     chooseLocation(lat, lng, lat.toFixed(5) + ', ' + lng.toFixed(5));
   });
 
-  $('#pf-maps-form').addEventListener('submit', e => {
+  $('#pf-maps-form').addEventListener('submit', async e => {
     e.preventDefault();
     const raw = $('#pf-maps-link').value;
     if (!raw.trim()) { __pfMsg(bd, '\u8bf7\u7c98\u8d34 Google Maps \u5206\u4eab\u94fe\u63a5'); return; }
+    const submitBtn = bd.querySelector('#pf-maps-form button[type="submit"]');
     const parsed = __parseMapsLink(raw);
     if (parsed.error) { __pfMsg(bd, parsed.error); return; }
+    if (parsed.short) {
+      submitBtn.disabled = true; submitBtn.textContent = '\u89e3\u6790\u4e2d\u2026';
+      __pfMsg(bd, '');
+      try {
+        const target = await __resolveShortLink(parsed.url);
+        if (!target) { __pfMsg(bd, '\u77ed\u94fe\u63a5\u89e3\u6790\u5931\u8d25\uff0c\u8bf7\u68c0\u67e5\u7f51\u7edc\u540e\u91cd\u8bd5\uff0c\u6216\u6539\u7528\u641c\u5730\u540d/\u8f93\u7ecf\u7eac\u5ea6'); return; }
+        let u2;
+        try { u2 = new URL(target); } catch (err) { __pfMsg(bd, '\u77ed\u94fe\u63a5\u89e3\u6790\u5931\u8d25\uff0c\u8bf7\u68c0\u67e5\u94fe\u63a5\u662f\u5426\u6709\u6548'); return; }
+        const p2 = __parseMapsUrl(u2);
+        if (p2.error) { __pfMsg(bd, p2.error); return; }
+        chooseLocation(p2.lat, p2.lng, p2.label, p2.label);
+      } finally {
+        submitBtn.disabled = false; submitBtn.textContent = '\u89e3\u6790\u94fe\u63a5';
+      }
+      return;
+    }
     __pfMsg(bd, '');
     chooseLocation(parsed.lat, parsed.lng, parsed.label, parsed.label);
   });
