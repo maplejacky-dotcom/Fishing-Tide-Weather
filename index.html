@@ -1411,6 +1411,8 @@ let DATA=__r.data;
       if (fraction < .53) return '满月';
       if (fraction < .72) return '亏凸月';
       if (fraction < .78) return '下弦月';
+      return '残月';
+    }
     function solunar(dateString) {
       const date = new Date(`${dateString}T12:00:00-04:00`);
       const known = new Date('2000-01-06T18:14:00Z');
@@ -1421,8 +1423,6 @@ let DATA=__r.data;
       const mk = (center, half) => { const s = (((center - half) % 24) + 24) % 24; return [s, s + half * 2]; };
       return {major:[span(transit,1), span(transit + 12.42,1)], minor:[span(transit - 6.21,.5), span(transit + 6.21,.5)],
         majorSpans:[mk(transit,1), mk(transit + 12.42,1)], minorSpans:[mk(transit - 6.21,.5), mk(transit + 6.21,.5)]};
-    }
-      return '残月';
     }
     function weekday(date) {
       const names = ['周日','周一','周二','周三','周四','周五','周六'];
