@@ -105,6 +105,8 @@
     .gust-line { display: block; margin-top: 3px; color: var(--muted); font-size: .72rem; font-weight: 600; }
     .season-line { margin: 11px 0 0; color: var(--muted); font-size: .82rem; }
     .season-line strong { color: var(--gold); font-weight: 800; }
+    .best-window { margin: 9px 0 0; color: var(--muted); font-size: .84rem; }
+    .best-window b { color: var(--gold); font-weight: 800; font-variant-numeric: tabular-nums; }
     .recommend { margin: 9px 0 0; padding-top: 10px; border-top: 1px dashed var(--line); color: var(--muted); font-size: .84rem; }
     .detail { display: none; }
     .detail.active { display: block; }
@@ -1152,6 +1154,38 @@ let DATA=__r.data;
       else advice = '条件一般，近岸作钓也请先观察现场风浪。';
       return {failed:false,ti,wi,mi,currentTide,rising,nextEvent,wave,swell,sea,rain,score,advice};
     }
+    function bestWindow(spot, dateStr) {
+      const tideH = (spot.tide?.hourly || []).filter(p => p.t.slice(0,10) === dateStr);
+      const wH = spot.weather?.hourly, mH = spot.marine?.hourly;
+      if (!tideH.length || !wH || !mH) return null;
+      const hours = [];
+      for (let h = 0; h < 24; h++) {
+        const hh = String(h).padStart(2,'0');
+        const tidePt = tideH.find(p => p.t.slice(11,13) === hh);
+        const key = dateStr + 'T' + hh + ':00';
+        const wi = wH.time.indexOf(key), mi = mH.time.indexOf(key);
+        if (!tidePt || wi < 0 || mi < 0) continue;
+        hours.push({h, v:Number(tidePt.v), wind:Number(wH.wind_speed_10m[wi]),
+          gust:Number(wH.wind_gusts_10m[wi]), wave:Number(mH.wave_height[mi])});
+      }
+      if (hours.length < 3) return null;
+      const scoreHour = (cur, next) => {
+        let s = 0;
+        const rate = next ? next.v - cur.v : 0;
+        if (rate > .25) s += 30; else if (rate > .05) s += 20; else if (rate < -.25) s += 12; else s += 6;
+        s += Math.max(0, 30 - Math.max(0, cur.wind - 8) * 2.1 - Math.max(0, cur.gust - 18) * 1.15);
+        s += Math.max(0, 20 - Math.max(0, cur.wave - 1.5) * 10);
+        return s;
+      };
+      let best = null;
+      for (let i = 0; i + 2 < hours.length; i++) {
+        if (hours[i+1].h !== hours[i].h + 1 || hours[i+2].h !== hours[i+1].h + 1) continue;
+        const s = scoreHour(hours[i],hours[i+1]) + scoreHour(hours[i+1],hours[i+2]) + scoreHour(hours[i+2],null);
+        if (!best || s > best.s) best = {s, start:hours[i].h, end:hours[i+2].h + 1};
+      }
+      if (!best) return null;
+      return {start:best.start, end:best.end, label:`${best.start}:00–${best.end}:00`};
+    }
     const FISH_SPECIES = [
       {name:'黑鱼',english:'Tautog',months:[4,5,10,11],temp:[50,62],note:'秋季正季，礁石区用蟹做饵'},
       {name:'条纹鲈',english:'Striped Bass',months:[4,5,6,9,10,11],temp:[55,68],note:'春秋洄游季'},
@@ -1283,6 +1317,7 @@ let DATA=__r.data;
         if (d.failed) return `<article class="error"><strong>${esc(spot.name)}</strong><p>数据更新失败</p></article>`;
         const c = spot.weather.current;
         const currentFish = seasonalFish(spot,spot.weather.daily.time[0])[0];
+        const bwToday = bestWindow(spot,spot.weather.daily.time[0]);
         return `<div class="spot-card" role="button" tabindex="0" data-index="${index}" aria-label="查看 ${esc(spot.name)} 详情">
           <div class="card-top">
             <div><span class="rank">#${rank+1} · ${scoreLabel(d.score)}</span><h3>${esc(spot.name)}</h3><span class="station">NOAA 站 ${esc(spot.station)}</span></div>
@@ -1298,6 +1333,7 @@ let DATA=__r.data;
             <div class="metric"><span>海温</span><b>${n(d.sea,0)}°F</b></div>
           </div>
           <p class="season-line">时令：<strong>${esc(currentFish.name)}</strong></p>
+          <p class="best-window">今日最佳窗口 <b>${bwToday ? bwToday.label : '暂无'}</b></p>
           <p class="recommend">${esc(d.advice)} <span>仅供参考</span></p>
           ${spot.isCustom?`<button type="button" class="pf-card-manage" data-pf-manage="${esc(spot.pid)}">管理</button>`:''}
         </div>`;
@@ -1413,6 +1449,7 @@ let DATA=__r.data;
       const selectedAdvice = dayAdvice(spot,selectedDate,selectedIndex);
       const selectedSea = seaTemperatureForDate(spot,selectedDate);
       const events = tideEventsForDate(spot,selectedDate);
+      const bwSel = bestWindow(spot,selectedDate);
       const highs = events.filter(x => x.type === 'H').length;
       const lows = events.filter(x => x.type === 'L').length;
       const tideStatus = selectedIndex === 0
@@ -1433,7 +1470,7 @@ let DATA=__r.data;
       </article>
       <div class="detail-layout">
         <section class="panel chart-panel"><h2>${Number(selectedDate.slice(5,7))}月${Number(selectedDate.slice(8,10))}日潮汐</h2><p class="panel-sub">${curveNote}</p><div class="date-strip" aria-label="选择潮汐日期">${makeDateStrip(spot,selectedIndex)}</div><div class="chart-wrap"><canvas id="tide-chart" role="img" aria-label="${esc(spot.name)} ${esc(selectedDate)} 潮汐曲线"></canvas></div><div class="legend"><span><i></i>潮位曲线</span><span><i class="gold"></i>高潮 / 低潮</span></div></section>
-        <section class="panel"><h2>当天高低潮</h2><p class="panel-sub">${weekday(selectedDate)} · 美国东部时间</p><div class="tide-table">${makeTideEvents(spot,selectedDate)}</div></section>
+        <section class="panel"><h2>当天高低潮</h2><p class="panel-sub">${weekday(selectedDate)} · 美国东部时间</p><div class="tide-table">${makeTideEvents(spot,selectedDate)}</div><p class="best-window">最佳出钓窗口 <b>${bwSel ? bwSel.label : '暂无'}</b> <span style="color:var(--muted)">· 涨潮+风浪综合</span></p></section>
         <section class="panel"><h2>今天的光照与月相</h2><p class="panel-sub">适合安排清晨和傍晚窗口</p><div class="sun-moon"><div><span>日出</span><b>${timeOnly(daily.sunrise[0])}</b></div><div><span>日落</span><b>${timeOnly(daily.sunset[0])}</b></div><div><span>月相</span><b>${moonPhase(daily.time[0])}</b></div></div></section>
         <section class="panel season-panel"><h2>时令鱼种参考</h2><p class="panel-sub">${Number(selectedDate.slice(5,7))}月${Number(selectedDate.slice(8,10))}日 · ${spotState(spot)} 法规 · 当天平均海温 ${Number.isFinite(selectedSea) ? `${n(selectedSea,0)}°F` : '暂无'}</p><div class="fish-list">${makeFishList(spot,selectedDate)}</div><p class="fish-footnote">根据季节与水温推测，仅供参考。${regulationSources()}</p></section>
       </div>
