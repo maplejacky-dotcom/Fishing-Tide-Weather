@@ -223,12 +223,12 @@
       <header class="hero">
         <h1 id="main-title">今晚去哪钓？<br><span>先看潮、风和浪。</span></h1>
         <div class="hero-row">
-          <p class="intro">纽约、新泽西与罗德岛 9 个海岸钓点的 7 天预报。综合潮势、风速和浪高，快速比较出钓条件。</p>
+          <p class="intro">纽约、新泽西与罗德岛 <span id="pf-intro-count">9 个</span>海岸钓点的 7 天预报。综合潮势、风速和浪高，快速比较出钓条件。</p>
           <div id="freshness" class="freshness"></div>
         </div>
       </header>
       <div class="summary-strip" aria-label="数据范围">
-        <div class="summary-item"><b>9 个钓点</b>同屏比较</div>
+        <div class="summary-item"><b id="pf-count">9 个钓点</b>同屏比较</div>
         <div class="summary-item"><b>48 小时</b>潮汐曲线</div>
         <div class="summary-item"><b>7 天</b>海况预报</div>
       </div>
@@ -251,7 +251,92 @@
     </footer>
   </main>
 
-  <style>@keyframes __spin{to{transform:rotate(360deg)}}</style>
+  <style>
+/* Visitor-feature styles: toolbar, sort switch, sheets, rows */
+.pf-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:14px 0 4px}
+.pf-sort{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+.pf-sort button{border:0;background:transparent;color:var(--muted);padding:8px 16px;font-size:.9rem;cursor:pointer}
+.pf-sort button.on{background:var(--gold);color:#0a2431;font-weight:700}
+.pf-tools{display:flex;gap:8px}
+.pf-btn{border:1px solid var(--line);background:var(--panel-2);color:var(--text);border-radius:12px;padding:9px 14px;font-size:.92rem;cursor:pointer}
+.pf-btn:disabled{opacity:.45;cursor:default}
+.pf-btn.pf-primary{background:var(--gold);border-color:var(--gold);color:#0a2431;font-weight:700}
+.pf-btn.pf-ghost{background:transparent}
+.pf-btn.pf-small{padding:6px 10px;font-size:.82rem}
+.pf-btn.pf-danger{background:var(--red);border-color:var(--red);color:#0a2431;font-weight:700}
+.pf-btn.pf-danger-link{background:transparent;border:0;color:var(--red);padding:9px 4px}
+.pf-backdrop{position:fixed;inset:0;background:rgba(2,10,16,.62);z-index:10000;display:flex;align-items:flex-end;justify-content:center;padding:0}
+@media(min-width:640px){.pf-backdrop{align-items:center;padding:24px}}
+.pf-sheet{background:var(--bg-2);color:var(--text);border:1px solid var(--line);border-radius:20px 20px 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;padding:20px}
+@media(min-width:640px){.pf-sheet{border-radius:20px}}
+.pf-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.pf-head .eyebrow{color:var(--gold);font-size:.78rem;letter-spacing:.08em;margin:0 0 2px}
+.pf-head h2{margin:0;font-size:1.3rem}
+.pf-close{border:1px solid var(--line);background:transparent;color:var(--text);width:34px;height:34px;border-radius:50%;font-size:1.2rem;line-height:1;cursor:pointer}
+.pf-field{display:block;margin:10px 0}
+.pf-field>span{display:block;font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.pf-field input{width:100%;box-sizing:border-box;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:10px 12px;font-size:1rem}
+.pf-tabs{display:flex;gap:6px;margin:12px 0}
+.pf-tabs button{flex:1;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:10px;padding:9px 4px;font-size:.85rem;cursor:pointer}
+.pf-tabs button.on{border-color:var(--gold);color:var(--gold);font-weight:700}
+.pf-pane{margin-bottom:6px}
+.pf-row{display:flex;gap:8px}
+.pf-row input{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:10px 12px;font-size:1rem;min-width:0}
+.pf-col{display:flex;flex-direction:column;gap:10px}
+.pf-coord-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pf-results{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.pf-place-btn{text-align:left;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:10px 12px;cursor:pointer}
+.pf-place-btn strong{display:block}
+.pf-place-btn span{font-size:.82rem;color:var(--muted)}
+.pf-note{font-size:.85rem;color:var(--muted);margin:10px 0}
+.pf-loc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}
+.pf-loc span{font-size:.78rem;color:var(--muted);display:block}
+.pf-loc strong{display:block;margin-top:2px}
+.pf-loc small{color:var(--muted)}
+.pf-reg{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}
+.pf-reg legend{font-size:.85rem;padding:0 6px}
+.pf-reg>div{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.pf-reg label{border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:.85rem;cursor:pointer;color:var(--muted)}
+.pf-reg label.on{border-color:var(--gold);color:var(--gold);font-weight:700}
+.pf-reg input{position:absolute;opacity:0;pointer-events:none}
+.pf-stations fieldset{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}
+.pf-stations legend{font-size:.85rem;padding:0 6px}
+.pf-radio{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin:8px 0;cursor:pointer}
+.pf-radio.on{border-color:var(--gold)}
+.pf-radio input{margin-top:3px}
+.pf-radio strong{display:block;font-size:.92rem}
+.pf-radio small{color:var(--muted);font-size:.78rem}
+.pf-msg{background:rgba(255,127,114,.12);border:1px solid var(--red);color:var(--text);border-radius:12px;padding:10px 12px;font-size:.88rem;margin:10px 0}
+.pf-msg.ok{background:rgba(123,216,161,.12);border-color:var(--green)}
+.pf-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.pf-rows{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.pf-row-item{display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.pf-row-item.is-hidden{opacity:.55}
+.pf-order-btns{display:flex;flex-direction:column;gap:2px}
+.pf-order-btns button{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:8px;width:30px;height:24px;font-size:.8rem;cursor:pointer;line-height:1}
+.pf-order-btns button:disabled{opacity:.3;cursor:default}
+.pf-row-copy{flex:1;min-width:0}
+.pf-row-copy strong{display:block;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf-row-copy small{color:var(--muted);font-size:.76rem}
+.pf-visibility{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:6px 12px 6px 8px;font-size:.8rem;cursor:pointer}
+.pf-visibility span{width:30px;height:17px;border-radius:999px;background:var(--line);position:relative;transition:background .15s}
+.pf-visibility span::after{content:"";position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:var(--muted);transition:left .15s,background .15s}
+.pf-visibility.on{color:var(--text)}
+.pf-visibility.on span{background:var(--gold)}
+.pf-visibility.on span::after{left:15px;background:#0a2431}
+.pf-visibility b{font-weight:600}
+.pf-del-confirm{background:rgba(255,127,114,.08);border:1px solid var(--red);border-radius:12px;padding:12px;margin:10px 0}
+.pf-del-confirm strong{display:block;margin-bottom:4px}
+.pf-del-confirm span{font-size:.85rem;color:var(--muted);display:block;margin-bottom:10px}
+.pf-del-confirm>div{display:flex;gap:10px;justify-content:flex-end}
+.pf-empty{border:1px dashed var(--line);border-radius:var(--radius-lg);padding:34px 20px;text-align:center;color:var(--muted)}
+.pf-empty strong{display:block;color:var(--text);font-size:1.05rem;margin-bottom:6px}
+.pf-empty span{display:block;margin-bottom:14px;font-size:.9rem}
+.pf-card-manage{margin-top:10px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:6px 14px;font-size:.8rem;cursor:pointer}
+.pf-card-manage:hover{border-color:var(--gold);color:var(--gold)}
+
+</style>
+<style>@keyframes __spin{to{transform:rotate(360deg)}}</style>
 <div id="live-loading" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#06131d;color:#f4f7f8;z-index:9999;font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">
 <div style="text-align:center"><div style="width:44px;height:44px;margin:0 auto 1rem;border:3px solid rgba(242,199,96,.25);border-top-color:#f2c760;border-radius:50%;animation:__spin 0.9s linear infinite"></div><p style="font-size:1.05rem;margin:0">正在获取最新潮汐天气数据…</p><p style="opacity:.6;font-size:.85rem;margin:.4rem 0 0">首次打开需要几秒钟</p></div>
 </div>
@@ -268,7 +353,488 @@ const SPOT_META=[
 {"name":"Viking \u8239\u9493 Block Island","station":"8459681","stationName":"Southwest Point, Block Island","lat":41.1573896,"lng":-71.7404752,"regulationState":"NY"},
 {"name":"Seagate Brooklyn","station":"8517811","stationName":"Norton Point, Gravesend Bay","lat":40.5802704,"lng":-74.0107626,"regulationState":"NY"}
 ];
-const __CACHE_KEY='fishing_public_live_v1';
+/* ===== Visitor features for the public live page =====
+   Custom spots, sort mode (score / my order), preset visibility.
+   Per-visitor settings, stored in the visitor's own browser (localStorage).
+   Inlined into index.html by build_live.py, inside the same async IIFE. */
+
+const PF_KEY = 'fishing_public_prefs_v1';
+
+function __presetId(m) { return 'p:' + m.station; }
+function __pfDefaults() { return { customSpots: [], hidden: [], sortMode: 'score', order: SPOT_META.map(__presetId) }; }
+function __pfLoad() {
+  try {
+    const p = JSON.parse(localStorage.getItem(PF_KEY));
+    if (p && Array.isArray(p.order) && Array.isArray(p.customSpots)) return Object.assign(__pfDefaults(), p);
+  } catch (e) {}
+  return __pfDefaults();
+}
+let PF = __pfLoad();
+function __pfSave() { try { localStorage.setItem(PF_KEY, JSON.stringify(PF)); } catch (e) {} }
+function __pfAllIds() { return SPOT_META.map(__presetId).concat(PF.customSpots.map(c => c.id)); }
+function __pfSyncOrder() {
+  const ids = new Set(__pfAllIds());
+  PF.order = PF.order.filter(id => ids.has(id));
+  for (const id of __pfAllIds()) if (!PF.order.includes(id)) PF.order.push(id);
+}
+function __pfMetas() {
+  __pfSyncOrder();
+  const hidden = new Set(PF.hidden);
+  const out = [];
+  for (const m of SPOT_META) {
+    if (!hidden.has(__presetId(m))) out.push(Object.assign({}, m, { pid: __presetId(m), isCustom: false }));
+  }
+  for (const c of PF.customSpots) {
+    out.push({ name: c.name, station: c.station, stationName: c.stationName, lat: c.lat, lng: c.lng, regulationState: c.regulationState, pid: c.id, isCustom: true });
+  }
+  return out;
+}
+function __pfSpotKey(metas) { return metas.map(m => m.pid + ':' + m.station).join('|'); }
+function __pfPos(spot) {
+  const pid = spot.pid || (spot.station ? __presetId(spot) : '');
+  const i = PF.order.indexOf(pid);
+  return i < 0 ? 9999 : i;
+}
+function __stateForMeta(m) {
+  if (m.regulationState) return m.regulationState;
+  if (m.name === 'Newport, RI') return 'RI';
+  if (m.name === 'Sandy Hook, NJ' || m.name === 'Atlantic City, NJ' || m.name === 'Belmar \u98de\u673a\u77f3') return 'NJ';
+  return 'NY';
+}
+function __suggestReg(lat, lng) {
+  let best = null, bd = 1e9;
+  for (const m of SPOT_META) {
+    const d = __haversineKm(lat, lng, m.lat, m.lng);
+    if (d < bd) { bd = d; best = m; }
+  }
+  return (best && bd < 60) ? __stateForMeta(best) : 'OTHER';
+}
+
+/* ---------- NOAA station matching ---------- */
+function __haversineKm(a, b, c, d) {
+  const r = x => x * Math.PI / 180, dLa = r(c - a), dLo = r(d - b);
+  const v = Math.sin(dLa / 2) ** 2 + Math.cos(r(a)) * Math.cos(r(c)) * Math.sin(dLo / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(v), Math.sqrt(1 - v));
+}
+let __stationCache = null;
+async function __loadStations() {
+  if (__stationCache) return __stationCache;
+  const j = await __fetchJSON('https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json?type=tidepredictions');
+  __stationCache = j.stations
+    .filter(s => s.lat != null && s.lng != null)
+    .map(s => ({ id: String(s.id), name: s.name, lat: +s.lat, lng: +s.lng }));
+  return __stationCache;
+}
+function __nearestStations(lat, lng, n) {
+  return __stationCache
+    .map(s => ({ id: s.id, name: s.name, lat: s.lat, lng: s.lng, d: __haversineKm(lat, lng, s.lat, s.lng) }))
+    .sort((a, b) => a.d - b.d)
+    .slice(0, n || 5);
+}
+
+/* ---------- place search / maps link ---------- */
+async function __searchPlaces(q) {
+  const p = new URLSearchParams({ name: q, count: '6', language: 'zh', format: 'json' });
+  const j = await __fetchJSON('https://geocoding-api.open-meteo.com/v1/search?' + p.toString());
+  return (j.results || []).map(r => ({
+    name: r.name,
+    label: [r.name, r.admin1, r.country].filter(Boolean).join(' \u00b7 '),
+    lat: r.latitude, lng: r.longitude
+  }));
+}
+function __coordPair(v) {
+  if (!v) return null;
+  const m = String(v).match(/(-?\d{1,2}(?:\.\d+)?),\s*(-?\d{1,3}(?:\.\d+)?)/);
+  if (!m) return null;
+  const lat = +m[1], lng = +m[2];
+  return (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) ? { lat, lng } : null;
+}
+function __mapsCoords(u) {
+  const at = decodeURIComponent(u.pathname).match(/\/@(-?\d{1,2}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?),/);
+  if (at) { const c = __coordPair(at[1] + ',' + at[2]); if (c) return c; }
+  for (const k of ['q', 'query', 'll']) { const c = __coordPair(u.searchParams.get(k)); if (c) return c; }
+  const dv = u.searchParams.get('data') || decodeURIComponent(u.pathname);
+  const dm = dv.match(/!3d(-?\d{1,2}(?:\.\d+)?)!4d(-?\d{1,3}(?:\.\d+)?)/);
+  if (dm) return __coordPair(dm[1] + ',' + dm[2]);
+  return null;
+}
+function __mapsLabel(u) {
+  const pm = u.pathname.match(/\/maps\/(?:place|search)\/([^/]+)/i);
+  let label = (pm && pm[1]) ? decodeURIComponent(pm[1]).replace(/\+/g, ' ').trim() : '';
+  if (!label) for (const k of ['q', 'query']) {
+    const v = (u.searchParams.get(k) || '').trim();
+    if (v && !__coordPair(v)) { label = v; break; }
+  }
+  return label ? label.slice(0, 80) : null;
+}
+function __parseMapsLink(raw) {
+  let u;
+  try { u = new URL(raw.trim()); } catch (e) { return { error: '\u94fe\u63a5\u65e0\u6548\uff0c\u8bf7\u68c0\u67e5\u540e\u91cd\u8bd5' }; }
+  if (u.protocol !== 'https:') return { error: '\u94fe\u63a5\u65e0\u6548\uff0c\u8bf7\u68c0\u67e5\u540e\u91cd\u8bd5' };
+  if (u.hostname === 'maps.app.goo.gl') return { error: '\u77ed\u94fe\u63a5\u5728\u7f51\u9875\u7248\u65e0\u6cd5\u76f4\u63a5\u89e3\u6790\uff1a\u8bf7\u7528 Google Maps \u6253\u5f00\u8be5\u94fe\u63a5\uff0c\u518d\u590d\u5236\u6d4f\u89c8\u5668\u5730\u5740\u680f\u7684\u5b8c\u6574\u94fe\u63a5\u7c98\u8d34\u5230\u8fd9\u91cc' };
+  if (!['google.com', 'www.google.com', 'maps.google.com'].includes(u.hostname)) return { error: '\u8bf7\u8f93\u5165 Google Maps \u5206\u4eab\u94fe\u63a5' };
+  const c = __mapsCoords(u);
+  if (!c) return { error: '\u94fe\u63a5\u91cc\u6ca1\u6709\u627e\u5230\u5750\u6807\uff0c\u8bf7\u68c0\u67e5\u94fe\u63a5\u662f\u5426\u6709\u6548\uff0c\u6216\u6539\u7528\u641c\u5730\u540d/\u8f93\u7ecf\u7eac\u5ea6' };
+  return { lat: c.lat, lng: c.lng, label: __mapsLabel(u) || (c.lat.toFixed(5) + ', ' + c.lng.toFixed(5)) };
+}
+
+/* ---------- sheets ---------- */
+const PF_REG_LABELS = { NY: 'NY \u7ebd\u7ea6\u5dde', NJ: 'NJ \u65b0\u6cfd\u897f\u5dde', RI: 'RI \u7f57\u5fb7\u5c9b\u5dde', OTHER: '\u5176\u4ed6' };
+function __regPickerHTML(value, note, group) {
+  const g = group || 'pf-reg';
+  return '<fieldset class="pf-reg"><legend>\u9002\u7528\u6cd5\u89c4\u5dde</legend>' +
+    (note ? '<p class="pf-note">' + esc(note) + '</p>' : '') +
+    '<div>' + ['NY', 'NJ', 'RI', 'OTHER'].map(s =>
+      '<label class="' + (value === s ? 'on' : '') + '"><input type="radio" name="' + g + '" value="' + s + '"' + (value === s ? ' checked' : '') + '><span>' + PF_REG_LABELS[s] + '</span></label>'
+    ).join('') + '</div></fieldset>';
+}
+function __openBackdrop(html) {
+  __closeSheets();
+  const bd = document.createElement('div');
+  bd.className = 'pf-backdrop';
+  bd.innerHTML = html;
+  bd.addEventListener('mousedown', e => { if (e.target === bd) __closeSheets(); });
+  document.body.appendChild(bd);
+  const dlg = bd.querySelector('.pf-sheet');
+  const close = bd.querySelector('.pf-close');
+  if (close) close.addEventListener('click', __closeSheets);
+  return bd;
+}
+function __closeSheets() {
+  document.querySelectorAll('.pf-backdrop').forEach(el => el.remove());
+}
+function __pfMsg(bd, text, ok) {
+  const el = bd.querySelector('.pf-msg');
+  if (!text) { el.hidden = true; el.textContent = ''; return; }
+  el.hidden = false;
+  el.textContent = text;
+  el.classList.toggle('ok', !!ok);
+}
+function __readReg(bd) {
+  const checked = bd.querySelector('.pf-reg input:checked');
+  return checked ? checked.value : 'OTHER';
+}
+
+/* ----- Add spot sheet ----- */
+function __openAddSpot() {
+  const bd = __openBackdrop(
+    '<section class="pf-sheet" role="dialog" aria-modal="true" aria-label="\u6dfb\u52a0\u9493\u70b9">' +
+    '<div class="pf-head"><div><p class="eyebrow">\u81ea\u5b9a\u4e49\u5730\u70b9</p><h2>\u6dfb\u52a0\u9493\u70b9</h2></div>' +
+    '<button type="button" class="pf-close" aria-label="\u5173\u95ed">\u00d7</button></div>' +
+    '<label class="pf-field"><span>\u9493\u70b9\u540d\u79f0</span><input id="pf-name" maxlength="40" placeholder="\u4f8b\u5982\uff1a\u6211\u5bb6\u95e8\u53e3\u7684\u7801\u5934"></label>' +
+    '<div class="pf-tabs" role="tablist" aria-label="\u9009\u62e9\u4f4d\u7f6e\u65b9\u5f0f">' +
+    '<button type="button" data-tab="search" class="on">\u641c\u5730\u540d</button>' +
+    '<button type="button" data-tab="coords">\u7ecf\u7eac\u5ea6</button>' +
+    '<button type="button" data-tab="maps">\u5730\u56fe\u94fe\u63a5</button>' +
+    '<button type="button" data-tab="current">\u5f53\u524d\u4f4d\u7f6e</button></div>' +
+    '<div class="pf-pane" data-pane="search"><form id="pf-search-form" class="pf-row">' +
+    '<input id="pf-search-q" placeholder="\u57ce\u5e02\u3001\u6d77\u6ee9\u6216\u7801\u5934\u9644\u8fd1\u5730\u540d" aria-label="\u8f93\u5165\u5730\u540d">' +
+    '<button type="submit" class="pf-btn">\u641c\u7d22</button></form><div id="pf-search-results" class="pf-results"></div></div>' +
+    '<div class="pf-pane" data-pane="coords" hidden><div class="pf-coord-grid">' +
+    '<label class="pf-field"><span>\u7eac\u5ea6</span><input id="pf-lat" inputmode="decimal" placeholder="39.3600"></label>' +
+    '<label class="pf-field"><span>\u7ecf\u5ea6</span><input id="pf-lng" inputmode="decimal" placeholder="-74.4300"></label></div>' +
+    '<button type="button" id="pf-coords-go" class="pf-btn">\u5339\u914d\u6f6e\u6c50\u7ad9</button></div>' +
+    '<div class="pf-pane" data-pane="maps" hidden><form id="pf-maps-form" class="pf-col">' +
+    '<label class="pf-field"><span>Google Maps \u5206\u4eab\u94fe\u63a5</span>' +
+    '<input id="pf-maps-link" type="url" placeholder="\u7c98\u8d34 google.com/maps \u5b8c\u6574\u94fe\u63a5\uff08\u77ed\u94fe\u63a5\u8bf7\u5148\u5728\u6d4f\u89c8\u5668\u6253\u5f00\u518d\u590d\u5236\u5730\u5740\u680f\uff09"></label>' +
+    '<button type="submit" class="pf-btn">\u89e3\u6790\u94fe\u63a5</button></form></div>' +
+    '<div class="pf-pane" data-pane="current" hidden><p class="pf-note">\u4f7f\u7528\u8bbe\u5907\u4f4d\u7f6e\u53ea\u7528\u4e8e\u5339\u914d\u5929\u6c14\u3001\u6d77\u51b5\u548c\u9644\u8fd1\u6f6e\u6c50\u7ad9\u3002</p>' +
+    '<button type="button" id="pf-geo-go" class="pf-btn">\u4f7f\u7528\u6211\u7684\u5f53\u524d\u4f4d\u7f6e</button></div>' +
+    '<div id="pf-loc" class="pf-loc" hidden></div>' +
+    '<div id="pf-regwrap" hidden></div>' +
+    '<div id="pf-stations" class="pf-stations" hidden></div>' +
+    '<div class="pf-msg" role="alert" hidden></div>' +
+    '<div class="pf-actions"><button type="button" class="pf-btn pf-ghost" id="pf-cancel">\u53d6\u6d88</button>' +
+    '<button type="button" class="pf-btn pf-primary" id="pf-save" disabled>\u4fdd\u5b58\u9493\u70b9</button></div>' +
+    '</section>'
+  );
+  const $ = sel => bd.querySelector(sel);
+  const state = { loc: null, stations: [], stationId: '', reg: 'OTHER', busy: false };
+
+  bd.querySelectorAll('.pf-tabs button').forEach(btn => btn.addEventListener('click', () => {
+    bd.querySelectorAll('.pf-tabs button').forEach(b => b.classList.toggle('on', b === btn));
+    bd.querySelectorAll('.pf-pane').forEach(p => { p.hidden = p.dataset.pane !== btn.dataset.tab; });
+    __pfMsg(bd, '');
+  }));
+  $('#pf-cancel').addEventListener('click', __closeSheets);
+
+  async function chooseLocation(lat, lng, label, suggestedName) {
+    state.loc = { lat, lng, label };
+    state.stations = []; state.stationId = '';
+    state.reg = __suggestReg(lat, lng);
+    const nameInput = $('#pf-name');
+    if (!nameInput.value.trim() && suggestedName) nameInput.value = suggestedName.slice(0, 40);
+    const locBox = $('#pf-loc');
+    locBox.hidden = false;
+    locBox.innerHTML = '<span>\u6240\u9009\u4f4d\u7f6e</span><strong>' + esc(label) + '</strong><small>' + lat.toFixed(5) + ', ' + lng.toFixed(5) + '</small>';
+    const regWrap = $('#pf-regwrap');
+    regWrap.hidden = false;
+    regWrap.innerHTML = __regPickerHTML(state.reg, '已按附近预设钓点自动选择；州界附近请按实际作钓水域确认。', 'pf-reg-add');
+    regWrap.querySelectorAll('input').forEach(r => r.addEventListener('change', () => { state.reg = r.value; }));
+    $('#pf-save').disabled = true;
+    const stBox = $('#pf-stations');
+    stBox.hidden = false;
+    stBox.innerHTML = '<p class="pf-note">\u6b63\u5728\u4ece NOAA \u7ad9\u70b9\u5217\u8868\u4e2d\u5339\u914d\u6700\u8fd1\u6f6e\u6c50\u7ad9\u2026</p>';
+    __pfMsg(bd, '');
+    try {
+      await __loadStations();
+      state.stations = __nearestStations(lat, lng, 5);
+      state.stationId = state.stations[0] ? state.stations[0].id : '';
+      if (!state.stations.length) { stBox.innerHTML = ''; __pfMsg(bd, '\u9644\u8fd1\u6ca1\u6709\u53ef\u7528\u7684\u6f6e\u6c50\u7ad9'); return; }
+      stBox.innerHTML = '<fieldset><legend>\u9009\u62e9\u6f6e\u6c50\u7ad9</legend><p class="pf-note">\u5df2\u81ea\u52a8\u9009\u4e2d\u6700\u8fd1\u7ad9\uff0c\u4e5f\u53ef\u4ee5\u6362\u4e00\u4e2a\u3002</p>' +
+        state.stations.map((s, i) => '<label class="pf-radio' + (s.id === state.stationId ? ' on' : '') + '">' +
+          '<input type="radio" name="pf-station" value="' + esc(s.id) + '"' + (s.id === state.stationId ? ' checked' : '') + '>' +
+          '<span><strong>' + esc(s.name) + '</strong><small>' + (i === 0 ? '\u6700\u8fd1 \u00b7 ' : '') + s.d.toFixed(1) + ' km \u00b7 NOAA ' + esc(s.id) + '</small></span></label>').join('') +
+        '</fieldset>';
+      stBox.querySelectorAll('input').forEach(r => r.addEventListener('change', () => {
+        state.stationId = r.value;
+        stBox.querySelectorAll('.pf-radio').forEach(l => l.classList.toggle('on', l.querySelector('input').checked));
+        $('#pf-save').disabled = false;
+      }));
+      $('#pf-save').disabled = false;
+    } catch (e) {
+      stBox.innerHTML = '';
+      __pfMsg(bd, '\u6f6e\u6c50\u7ad9\u5339\u914d\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5');
+    }
+  }
+
+  $('#pf-search-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const q = $('#pf-search-q').value.trim();
+    if (q.length < 2) { __pfMsg(bd, '\u8bf7\u8f93\u5165\u81f3\u5c11\u4e24\u4e2a\u5b57\u7684\u5730\u540d'); return; }
+    const box = $('#pf-search-results');
+    box.innerHTML = '<p class="pf-note">\u641c\u7d22\u4e2d\u2026</p>';
+    __pfMsg(bd, '');
+    try {
+      const results = await __searchPlaces(q);
+      if (!results.length) { box.innerHTML = '<p class="pf-note">\u6ca1\u6709\u627e\u5230\u5730\u70b9\uff0c\u8bf7\u6362\u4e2a\u5173\u952e\u8bcd\u3002</p>'; return; }
+      box.innerHTML = '';
+      results.forEach(r => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'pf-place-btn';
+        b.innerHTML = '<strong>' + esc(r.name) + '</strong><span>' + esc(r.label.replace(r.name + ' \u00b7 ', '')) + '</span>';
+        b.addEventListener('click', () => chooseLocation(r.lat, r.lng, r.label, r.name));
+        box.appendChild(b);
+      });
+    } catch (err) { box.innerHTML = ''; __pfMsg(bd, '\u5730\u540d\u641c\u7d22\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5'); }
+  });
+
+  $('#pf-coords-go').addEventListener('click', () => {
+    const lat = Number($('#pf-lat').value), lng = Number($('#pf-lng').value);
+    if (!Number.isFinite(lat) || lat < -90 || lat > 90 || !Number.isFinite(lng) || lng < -180 || lng > 180) {
+      __pfMsg(bd, '\u8bf7\u8f93\u5165\u6709\u6548\u7ecf\u7eac\u5ea6\uff1a\u7eac\u5ea6 -90 \u81f3 90\uff0c\u7ecf\u5ea6 -180 \u81f3 180'); return;
+    }
+    chooseLocation(lat, lng, lat.toFixed(5) + ', ' + lng.toFixed(5));
+  });
+
+  $('#pf-maps-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const raw = $('#pf-maps-link').value;
+    if (!raw.trim()) { __pfMsg(bd, '\u8bf7\u7c98\u8d34 Google Maps \u5206\u4eab\u94fe\u63a5'); return; }
+    const parsed = __parseMapsLink(raw);
+    if (parsed.error) { __pfMsg(bd, parsed.error); return; }
+    __pfMsg(bd, '');
+    chooseLocation(parsed.lat, parsed.lng, parsed.label, parsed.label);
+  });
+
+  $('#pf-geo-go').addEventListener('click', () => {
+    if (!navigator.geolocation) { __pfMsg(bd, '\u5f53\u524d\u6d4f\u89c8\u5668\u4e0d\u652f\u6301\u5b9a\u4f4d\uff0c\u8bf7\u6539\u7528\u5730\u540d\u6216\u7ecf\u7eac\u5ea6'); return; }
+    const btn = $('#pf-geo-go');
+    btn.disabled = true; btn.textContent = '\u6b63\u5728\u5b9a\u4f4d\u2026';
+    __pfMsg(bd, '');
+    navigator.geolocation.getCurrentPosition(
+      pos => chooseLocation(pos.coords.latitude, pos.coords.longitude, '\u5f53\u524d\u4f4d\u7f6e').then(() => { btn.disabled = false; btn.textContent = '\u4f7f\u7528\u6211\u7684\u5f53\u524d\u4f4d\u7f6e'; }),
+      () => { btn.disabled = false; btn.textContent = '\u4f7f\u7528\u6211\u7684\u5f53\u524d\u4f4d\u7f6e'; __pfMsg(bd, '\u65e0\u6cd5\u53d6\u5f97\u5f53\u524d\u4f4d\u7f6e\u3002\u8bf7\u68c0\u67e5\u5b9a\u4f4d\u6743\u9650\uff0c\u6216\u6539\u7528\u5730\u540d\u3001\u7ecf\u7eac\u5ea6\u3002'); },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 }
+    );
+  });
+
+  $('#pf-save').addEventListener('click', async () => {
+    const name = $('#pf-name').value.trim();
+    if (!name) { __pfMsg(bd, '\u8bf7\u8f93\u5165\u9493\u70b9\u540d\u79f0'); return; }
+    if (!state.loc || !state.stationId) { __pfMsg(bd, '\u8bf7\u5148\u9009\u62e9\u4f4d\u7f6e\u5e76\u5339\u914d\u6f6e\u6c50\u7ad9'); return; }
+    const st = state.stations.find(s => s.id === state.stationId) || state.stations[0];
+    const btn = $('#pf-save');
+    btn.disabled = true; btn.textContent = '\u4fdd\u5b58\u4e2d\u2026';
+    PF.customSpots.push({
+      id: 'c' + Date.now().toString(36),
+      name: name.slice(0, 40),
+      station: st.id, stationName: st.name, stationDistanceKm: Math.round(st.d * 10) / 10,
+      lat: Math.round(state.loc.lat * 1e6) / 1e6, lng: Math.round(state.loc.lng * 1e6) / 1e6,
+      regulationState: __readReg(bd)
+    });
+    __pfSave();
+    await __refreshSpots();
+  });
+}
+
+/* ----- Manage one custom spot ----- */
+function __openManageSpot(customId) {
+  const c = PF.customSpots.find(x => x.id === customId);
+  if (!c) return;
+  const bd = __openBackdrop(
+    '<section class="pf-sheet" role="dialog" aria-modal="true" aria-label="\u7ba1\u7406\u5730\u70b9">' +
+    '<div class="pf-head"><div><p class="eyebrow">\u81ea\u5b9a\u4e49\u9493\u70b9</p><h2>\u7ba1\u7406\u5730\u70b9</h2></div>' +
+    '<button type="button" class="pf-close" aria-label="\u5173\u95ed">\u00d7</button></div>' +
+    '<label class="pf-field"><span>\u9493\u70b9\u540d\u79f0</span><input id="pf-name" maxlength="40" value="' + esc(c.name) + '"></label>' +
+    '<div class="pf-loc"><span>\u6f6e\u6c50\u7ad9</span><strong>' + esc(c.stationName) + '</strong><small>' + c.stationDistanceKm + ' km \u00b7 NOAA ' + esc(c.station) + '</small></div>' +
+    '<div id="pf-regwrap">' + __regPickerHTML(c.regulationState, '', 'pf-reg-manage') + '</div>' +
+    '<div class="pf-msg" role="alert" hidden></div>' +
+    '<div id="pf-del-confirm" class="pf-del-confirm" hidden><strong>\u786e\u5b9a\u5220\u9664\u201c' + esc(c.name) + '\u201d\u5417\uff1f</strong>' +
+    '<span>\u5220\u9664\u540e\u65e0\u6cd5\u6062\u590d\uff0c\u9884\u8bbe\u9493\u70b9\u4e0d\u53d7\u5f71\u54cd\u3002</span>' +
+    '<div><button type="button" class="pf-btn pf-ghost" id="pf-del-no">\u4fdd\u7559</button>' +
+    '<button type="button" class="pf-btn pf-danger" id="pf-del-yes">\u786e\u8ba4\u5220\u9664</button></div></div>' +
+    '<div class="pf-actions" id="pf-manage-actions"><button type="button" class="pf-btn pf-danger-link" id="pf-del">\u5220\u9664\u9493\u70b9</button>' +
+    '<button type="button" class="pf-btn pf-primary" id="pf-save">\u4fdd\u5b58\u66f4\u6539</button></div>' +
+    '</section>'
+  );
+  const $ = sel => bd.querySelector(sel);
+  $('#pf-del').addEventListener('click', () => { $('#pf-del-confirm').hidden = false; $('#pf-manage-actions').hidden = true; });
+  $('#pf-del-no').addEventListener('click', () => { $('#pf-del-confirm').hidden = true; $('#pf-manage-actions').hidden = false; });
+  $('#pf-del-yes').addEventListener('click', async () => {
+    PF.customSpots = PF.customSpots.filter(x => x.id !== customId);
+    __pfSave();
+    await __refreshSpots();
+  });
+  $('#pf-save').addEventListener('click', async () => {
+    const name = $('#pf-name').value.trim();
+    if (!name) { __pfMsg(bd, '\u8bf7\u8f93\u5165\u9493\u70b9\u540d\u79f0'); return; }
+    c.name = name.slice(0, 40);
+    c.regulationState = __readReg(bd);
+    __pfSave();
+    await __refreshSpots();
+  });
+}
+
+/* ----- Manage all spots ----- */
+function __pfRowMeta(id) {
+  const custom = PF.customSpots.find(c => c.id === id);
+  if (custom) return { id, name: custom.name, sub: '\u81ea\u5b9a\u4e49 \u00b7 ' + custom.stationName, isCustom: true };
+  const m = SPOT_META.find(x => __presetId(x) === id);
+  if (m) return { id, name: m.name, sub: '\u9884\u8bbe \u00b7 NOAA ' + m.station, isCustom: false };
+  return null;
+}
+function __openManageAll() {
+  __pfSyncOrder();
+  const bd = __openBackdrop(
+    '<section class="pf-sheet" role="dialog" aria-modal="true" aria-label="\u7ba1\u7406\u9493\u70b9">' +
+    '<div class="pf-head"><div><p class="eyebrow">\u5730\u70b9\u8bbe\u7f6e</p><h2>\u7ba1\u7406\u9493\u70b9</h2></div>' +
+    '<button type="button" class="pf-close" aria-label="\u5173\u95ed">\u00d7</button></div>' +
+    '<p class="pf-note">\u7528\u4e0a\u4e0b\u6309\u94ae\u8c03\u6574\u201c\u6211\u7684\u987a\u5e8f\u201d\uff0c\u6bcf\u6b21\u79fb\u52a8\u90fd\u4f1a\u81ea\u52a8\u4fdd\u5b58\u3002\u9690\u85cf\u7684\u9493\u70b9\u4f1a\u4fdd\u7559\u539f\u4f4d\u7f6e\u3002\u8fd9\u4e9b\u8bbe\u7f6e\u53ea\u4fdd\u5b58\u5728\u4f60\u81ea\u5df1\u7684\u6d4f\u89c8\u5668\u91cc\u3002</p>' +
+    '<div id="pf-rows" class="pf-rows"></div>' +
+    '<div class="pf-msg" role="status" hidden></div>' +
+    '</section>'
+  );
+  const $ = sel => bd.querySelector(sel);
+  function paintRows() {
+    const box = $('#pf-rows');
+    box.innerHTML = '';
+    PF.order.forEach((id, idx) => {
+      const meta = __pfRowMeta(id);
+      if (!meta) return;
+      const hidden = !meta.isCustom && PF.hidden.includes(id);
+      const row = document.createElement('div');
+      row.className = 'pf-row-item' + (hidden ? ' is-hidden' : '');
+      row.innerHTML =
+        '<div class="pf-order-btns"><button type="button" aria-label="\u4e0a\u79fb ' + esc(meta.name) + '"' + (idx === 0 ? ' disabled' : '') + '>\u2191</button>' +
+        '<button type="button" aria-label="\u4e0b\u79fb ' + esc(meta.name) + '"' + (idx === PF.order.length - 1 ? ' disabled' : '') + '>\u2193</button></div>' +
+        '<div class="pf-row-copy"><strong>' + esc(meta.name) + '</strong><small>' + esc(meta.sub) + '</small></div>' +
+        '<div class="pf-row-act"></div>';
+      const [up, down] = row.querySelectorAll('.pf-order-btns button');
+      up.addEventListener('click', () => moveSpot(idx, -1));
+      down.addEventListener('click', () => moveSpot(idx, 1));
+      const act = row.querySelector('.pf-row-act');
+      if (meta.isCustom) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'pf-btn pf-ghost pf-small'; b.textContent = '\u7f16\u8f91';
+        b.addEventListener('click', () => __openManageSpot(id));
+        act.appendChild(b);
+      } else {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'pf-visibility' + (hidden ? '' : ' on');
+        b.setAttribute('role', 'switch');
+        b.setAttribute('aria-checked', String(!hidden));
+        b.setAttribute('aria-label', (hidden ? '\u663e\u793a ' : '\u9690\u85cf ') + meta.name);
+        b.innerHTML = '<span aria-hidden="true"></span><b>' + (hidden ? '\u5df2\u9690\u85cf' : '\u663e\u793a\u4e2d') + '</b>';
+        b.addEventListener('click', async () => {
+          if (hidden) PF.hidden = PF.hidden.filter(x => x !== id);
+          else PF.hidden.push(id);
+          __pfSave();
+          __pfMsg(bd, '', true);
+          paintRows();
+          await __refreshSpots();
+          __openManageAll();
+        });
+        act.appendChild(b);
+      }
+      box.appendChild(row);
+    });
+  }
+  function moveSpot(idx, dirn) {
+    const t = idx + dirn;
+    if (t < 0 || t >= PF.order.length) return;
+    const next = PF.order.slice();
+    const tmp = next[idx]; next[idx] = next[t]; next[t] = tmp;
+    PF.order = next;
+    __pfSave();
+    __pfMsg(bd, '\u987a\u5e8f\u5df2\u4fdd\u5b58', true);
+    paintRows();
+    renderHome();
+  }
+  paintRows();
+}
+
+/* ---------- refresh + init ---------- */
+async function __refreshSpots() {
+  try {
+    const r = await __loadData();
+    DATA = r.data;
+  } catch (e) { return; }
+  __closeSheets();
+  showHome();
+  renderHome();
+  __syncToolbar();
+}
+function __syncToolbar() {
+  document.querySelectorAll('.pf-sort button').forEach(b => {
+    b.classList.toggle('on', b.dataset.sort === PF.sortMode);
+    b.setAttribute('aria-pressed', String(b.dataset.sort === PF.sortMode));
+  });
+  const n = DATA && DATA.spots ? DATA.spots.length : 0;
+  const c = document.getElementById('pf-count');
+  if (c) c.textContent = n + ' \u4e2a\u9493\u70b9';
+  const ic = document.getElementById('pf-intro-count');
+  if (ic) ic.textContent = n + ' \u4e2a';
+}
+function __initPublicFeatures() {
+  const strip = document.querySelector('.summary-strip');
+  if (strip && !document.querySelector('.pf-toolbar')) {
+    const bar = document.createElement('div');
+    bar.className = 'pf-toolbar';
+    bar.innerHTML =
+      '<div class="pf-sort" role="group" aria-label="\u9996\u9875\u9493\u70b9\u6392\u5e8f\u65b9\u5f0f">' +
+      '<button type="button" data-sort="score">\u6309\u8bc4\u5206\u6392\u5e8f</button>' +
+      '<button type="button" data-sort="custom">\u6211\u7684\u987a\u5e8f</button></div>' +
+      '<div class="pf-tools"><button type="button" id="pf-add" class="pf-btn">\uff0b \u6dfb\u52a0\u9493\u70b9</button>' +
+      '<button type="button" id="pf-manage" class="pf-btn pf-ghost">\u7ba1\u7406\u9493\u70b9</button></div>';
+    strip.after(bar);
+    bar.querySelectorAll('.pf-sort button').forEach(b => b.addEventListener('click', () => {
+      if (PF.sortMode === b.dataset.sort) return;
+      PF.sortMode = b.dataset.sort;
+      __pfSave();
+      __syncToolbar();
+      renderHome();
+    }));
+    bar.querySelector('#pf-add').addEventListener('click', __openAddSpot);
+    bar.querySelector('#pf-manage').addEventListener('click', __openManageAll);
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') __closeSheets(); });
+}
+
+
+const __CACHE_KEY='fishing_public_live_v2';
 const __CACHE_TTL=3600*1000;
 function __etParts(d){
   const p=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);
@@ -287,8 +853,8 @@ function __readCache(){
     return JSON.parse(raw);
   }catch(e){ return null; }
 }
-function __saveCache(data){
-  try{ if(typeof localStorage!=='undefined') localStorage.setItem(__CACHE_KEY,JSON.stringify({savedAt:Date.now(),data})); }catch(e){}
+function __saveCache(data,key){
+  try{ if(typeof localStorage!=='undefined') localStorage.setItem(__CACHE_KEY,JSON.stringify({savedAt:Date.now(),key,data})); }catch(e){}
 }
 async function __fetchJSON(url){
   const r=await fetch(url);
@@ -348,6 +914,8 @@ async function __fetchSpot(meta,beginYMD,endYMD,dayYMD){
     hourlyTide=hourlyJ.predictions.slice(0,168).map(p=>({t:p.t,v:p.v}));
   }
   const spot={name:meta.name,station:meta.station,lat:meta.lat,lng:meta.lng};
+  if(meta.pid) spot.pid=meta.pid;
+  if(meta.isCustom) spot.isCustom=true;
   if(meta.stationName) spot.stationName=meta.stationName;
   if(meta.regulationState) spot.regulationState=meta.regulationState;
   spot.status='ok'; spot.errors=[];
@@ -375,8 +943,10 @@ function __showError(msg){
   if(el) el.innerHTML='<div style="text-align:center;max-width:22rem"><p style="font-size:1.05rem;margin:0 0 .6rem">数据获取失败，请检查网络后重试</p><p style="opacity:.65;font-size:.85rem;margin:0 0 1rem">'+String(msg).replace(/[<>&]/g,'')+'</p><button onclick="location.reload()" style="padding:.6rem 1.6rem;border-radius:999px;border:1px solid #f2c760;background:transparent;color:inherit;font-size:1rem">重试</button></div>';
 }
 async function __loadData(){
+  const metas=__pfMetas();
+  const key=__pfSpotKey(metas);
   const cache=__readCache();
-  const fresh=cache&&(Date.now()-cache.savedAt<__CACHE_TTL);
+  const fresh=cache&&cache.key===key&&(Date.now()-cache.savedAt<__CACHE_TTL);
   if(fresh) return {data:cache.data,fromCache:true};
   __showLoading();
   const now=new Date();
@@ -384,12 +954,18 @@ async function __loadData(){
   const endYMD=__ymd(new Date(now.getTime()+6*864e5));
   const dayYMD=beginYMD;
   try{
-    const spots=await Promise.all(SPOT_META.map(m=>__fetchSpot(m,beginYMD,endYMD,dayYMD)));
+    const results=await Promise.allSettled(metas.map(m=>__fetchSpot(m,beginYMD,endYMD,dayYMD)));
+    const spots=results.map((r,i)=>{
+      if(r.status==='fulfilled') return r.value;
+      const m=metas[i];
+      return {name:m.name,station:m.station,lat:m.lat,lng:m.lng,pid:m.pid,isCustom:!!m.isCustom,status:'error',
+              errors:[String((r.reason&&r.reason.message)||r.reason||'fetch failed')]};
+    });
     const data={asOf:__etISO(new Date()),spots};
-    __saveCache(data);
+    __saveCache(data,key);
     return {data,fromCache:false};
   }catch(e){
-    if(cache) return {data:cache.data,fromCache:true,stale:true};
+    if(cache&&cache.data) return {data:cache.data,fromCache:true,stale:true};
     __showError(e.message||e);
     throw e;
   }finally{
@@ -398,7 +974,7 @@ async function __loadData(){
 }
 
 const __r=await __loadData();
-const DATA=__r.data;
+let DATA=__r.data;
 
     const asOfLocal = DATA.asOf.slice(0,16).replace('T',' ');
     const asOfHour = DATA.asOf.slice(0,13) + ':00';
@@ -637,8 +1213,10 @@ const DATA=__r.data;
     }
     function renderHome() {
       document.getElementById('freshness').textContent = `更新于 ${stamp()}`;
+      __syncToolbar();
       document.getElementById('updated-footer').textContent = `数据更新时间：${stamp()}。所有时间均为美国东部时间，潮位基准为 MLLW，单位为英尺。`;
       const ranked = DATA.spots.map((spot,index) => ({spot,index,d:derive(spot)})).sort((a,b) => {
+        if (PF.sortMode === 'custom') return __pfPos(a.spot) - __pfPos(b.spot);
         const pinOrder = {'225':0,'Belmar 飞机石':1};
         const aPinned = Object.hasOwn(pinOrder,a.spot.name);
         const bPinned = Object.hasOwn(pinOrder,b.spot.name);
@@ -646,12 +1224,17 @@ const DATA=__r.data;
         if (aPinned !== bPinned) return aPinned ? -1 : 1;
         return b.d.score - a.d.score;
       });
+      if (!ranked.length) {
+        document.getElementById('spot-grid').innerHTML = '<div class="pf-empty"><strong>首页暂时没有显示的钓点</strong><span>到“管理钓点”重新显示预设地点，或添加一个自己的钓点。</span><button type="button" class="pf-btn" id="pf-empty-manage">管理钓点</button></div>';
+        document.getElementById('pf-empty-manage').addEventListener('click', __openManageAll);
+        return;
+      }
       document.getElementById('spot-grid').innerHTML = ranked.map((entry,rank) => {
         const {spot,index,d} = entry;
         if (d.failed) return `<article class="error"><strong>${esc(spot.name)}</strong><p>数据更新失败</p></article>`;
         const c = spot.weather.current;
         const currentFish = seasonalFish(spot,spot.weather.daily.time[0])[0];
-        return `<button class="spot-card" type="button" data-index="${index}" aria-label="查看 ${esc(spot.name)} 详情">
+        return `<div class="spot-card" role="button" tabindex="0" data-index="${index}" aria-label="查看 ${esc(spot.name)} 详情">
           <div class="card-top">
             <div><span class="rank">#${rank+1} · ${scoreLabel(d.score)}</span><h3>${esc(spot.name)}</h3><span class="station">NOAA 站 ${esc(spot.station)}</span></div>
             <div class="score" style="--score-color:${scoreColor(d.score)}"><div><strong>${d.score}</strong><small>评分</small></div></div>
@@ -667,9 +1250,15 @@ const DATA=__r.data;
           </div>
           <p class="season-line">时令：<strong>${esc(currentFish.name)}</strong></p>
           <p class="recommend">${esc(d.advice)} <span>仅供参考</span></p>
-        </button>`;
+          ${spot.isCustom?`<button type="button" class="pf-card-manage" data-pf-manage="${esc(spot.pid)}">管理</button>`:''}
+        </div>`;
       }).join('');
-      document.querySelectorAll('.spot-card').forEach(card => card.addEventListener('click', () => showDetail(Number(card.dataset.index))));
+      document.querySelectorAll('.spot-card').forEach(card => {
+        const open=() => showDetail(Number(card.dataset.index));
+        card.addEventListener('click', open);
+        card.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); open(); } });
+      });
+      document.querySelectorAll('[data-pf-manage]').forEach(b => b.addEventListener('click', ev => { ev.stopPropagation(); __openManageSpot(b.dataset.pfManage); }));
     }
 
     function moonPhase(dateString) {
@@ -850,6 +1439,7 @@ const DATA=__r.data;
 
     document.getElementById('back').addEventListener('click',showHome);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('detail').classList.contains('active'))showHome();});
+    __initPublicFeatures();
     renderHome();
   
 })();
