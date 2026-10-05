@@ -1296,7 +1296,7 @@ let DATA=__r.data;
           else if (sea >= fish.temp[0] - 5 && sea <= fish.temp[1] + 5) temperatureScore = 1;
         }
         return {...fish,score:seasonalScore + temperatureScore,order};
-      }).sort((a,b) => b.score - a.score || a.order - b.order).slice(0,3);
+      }).sort((a,b) => b.score - a.score || a.order - b.order);
     }
     function spotState(spot) {
       if (spot.regulationState) return spot.regulationState;
