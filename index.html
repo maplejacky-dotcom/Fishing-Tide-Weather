@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark light">
-    <meta name="theme-color" content="#06131d">
+  <meta name="theme-color" content="#06131d">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,8 +12,8 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <script src="pwa.js" defer></script>
   <title>钓鱼潮汐天气公开版</title>
+  <script src="pwa.js" defer></script>
   <style>
     :root {
       color-scheme: dark light;
@@ -75,6 +75,7 @@
     .hero h1 span { color: var(--gold); }
     .hero-row { margin-top: 18px; display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
     .intro { margin: 0; max-width: 670px; color: var(--muted); font-size: clamp(1rem, 2.2vw, 1.18rem); }
+    .lang-btn{margin-left:auto;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:999px;padding:8px 14px;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap}
     .freshness { display: inline-flex; align-items: center; gap: 9px; padding: 9px 12px; border: 1px solid var(--line); background: var(--panel); border-radius: 999px; color: var(--muted); font-size: .82rem; white-space: nowrap; }
     .freshness::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 16%, transparent); }
     .summary-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 18px; }
@@ -232,33 +233,33 @@
   <main class="shell">
     <section id="home" class="home" aria-labelledby="main-title">
       <header class="hero">
-        <h1 id="main-title">今晚去哪钓？<br><span>先看潮、风和浪。</span></h1>
+        <h1 id="main-title" data-i18n="static_h1">今晚去哪钓？<br><span>先看潮、风和浪。</span></h1>
         <div class="hero-row">
-          <p class="intro">纽约、新泽西与罗德岛 <span id="pf-intro-count">9 个</span>海岸钓点的 7 天预报。综合潮势、风速和浪高，快速比较出钓条件。</p>
-          <div id="freshness" class="freshness"></div>
+          <p class="intro"><span data-i18n="static_intro_a">纽约、新泽西与罗德岛</span> <span id="pf-intro-count">9 个</span><span data-i18n="static_intro_b">海岸钓点的 7 天预报。综合潮势、风速和浪高，快速比较出钓条件。</span></p>
+          <div id="freshness" class="freshness"></div><button id="lang-toggle" class="lang-btn" type="button">EN</button>
         </div>
       </header>
       <div class="summary-strip" aria-label="数据范围">
-        <div class="summary-item"><b id="pf-count">9 个钓点</b>同屏比较</div>
-        <div class="summary-item"><b>48 小时</b>潮汐曲线</div>
-        <div class="summary-item"><b>7 天</b>海况预报</div>
+        <div class="summary-item"><b id="pf-count">9 个钓点</b><span data-i18n="static_compare">同屏比较</span></div>
+        <div class="summary-item"><b data-i18n="static_48h">48 小时</b><span data-i18n="static_tidecurves">潮汐曲线</span></div>
+        <div class="summary-item"><b data-i18n="static_7d">7 天</b><span data-i18n="static_marine">海况预报</span></div>
       </div>
       <div class="section-head">
-        <h2>当前出钓排名</h2>
-        <p>评分高的排在前面<br>点击卡片看详情</p>
+        <h2 data-i18n="static_ranking">当前出钓排名</h2>
+        <p data-i18n="static_ranking_sub">评分高的排在前面<br>点击卡片看详情</p>
       </div>
       <div id="spot-grid" class="spot-grid"></div>
     </section>
 
     <section id="detail" class="detail" aria-live="polite">
-      <button id="back" class="back" type="button" aria-label="返回钓点比较">← 返回钓点比较</button>
+      <button id="back" class="back" type="button" data-i18n="static_back" aria-label="返回钓点比较">← 返回钓点比较</button>
       <div id="detail-content"></div>
     </section>
 
     <footer>
       <p id="updated-footer"></p>
-      <p>数据来源：NOAA Tides & Currents、Open-Meteo Weather 与 Marine Weather。</p>
-      <p>打开时自动获取最新数据；潮汐、天气与出钓评分仅供参考，请留意现场警报和海况。</p>
+      <p data-i18n="static_src">数据来源：NOAA Tides & Currents、Open-Meteo Weather 与 Marine Weather。</p>
+      <p data-i18n="static_disclaimer">打开时自动获取最新数据；潮汐、天气与出钓评分仅供参考，请留意现场警报和海况。</p>
     </footer>
   </main>
 
@@ -349,10 +350,41 @@
 </style>
 <style>@keyframes __spin{to{transform:rotate(360deg)}}</style>
 <div id="live-loading" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#06131d;color:#f4f7f8;z-index:9999;font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">
-<div style="text-align:center"><div style="width:44px;height:44px;margin:0 auto 1rem;border:3px solid rgba(242,199,96,.25);border-top-color:#f2c760;border-radius:50%;animation:__spin 0.9s linear infinite"></div><p style="font-size:1.05rem;margin:0">正在获取最新潮汐天气数据…</p><p style="opacity:.6;font-size:.85rem;margin:.4rem 0 0">首次打开需要几秒钟</p></div>
+<div style="text-align:center"><div style="width:44px;height:44px;margin:0 auto 1rem;border:3px solid rgba(242,199,96,.25);border-top-color:#f2c760;border-radius:50%;animation:__spin 0.9s linear infinite"></div><p style="font-size:1.05rem;margin:0" data-i18n="static_loading">正在获取最新潮汐天气数据…</p><p style="opacity:.6;font-size:.85rem;margin:.4rem 0 0" data-i18n="static_loading_sub">首次打开需要几秒钟</p></div>
 </div>
 <script>
 (async()=>{
+// ================= i18n =================
+const I18N_EN = {" 个": "", " 个钓点": " spots", "1条": "1", "2条": "2", "3条": "3", "4条": "4", "5条": "5", "6条": "6", "7条": "7", "10条": "10", "15条": "15", "30条": "30", "≥10英寸": "≥10 in", "≥12.5英寸": "≥12.5 in", "≥13英寸": "≥13 in", "≥14英寸": "≥14 in", "≥15英寸": "≥15 in", "≥16英寸": "≥16 in", "≥18英寸": "≥18 in", "≥19英寸": "≥19 in", "≥19.5英寸": "≥19.5 in", "28–31英寸 slot": "28–31 in slot", "无尺寸限制": "No size limit", "5条（私人）/7条（包船）": "5 (private) / 7 (charter)", "5条（私人/岸钓）/7条（包船）": "5 (private/shore) / 7 (charter)", "岸钓≥9.5英寸；船钓9–10月≥11英寸": "Shore ≥9.5 in; boat Sep–Oct ≥11 in", "私人船钓≥10.5英寸；岸钓≥9.5英寸": "Private boat ≥10.5 in; shore ≥9.5 in", "包船 9/1–10/31：≥10.5英寸，日限40条": "Charter 9/1–10/31: ≥10.5 in, 40/day", "每船最多10条（包船除外）；≥21英寸奖杯鱼限1条": "Max 10 per boat (charters excluded); trophy ≥21 in limit 1", "5/4–9/25，其它水域": "5/4–9/25, other waters", "近海3/1–12/31": "Offshore 3/1–12/31", "长岛湾10/11–12/9": "Long Island Sound 10/11–12/9", "开放期：4/1–4/30 日限2条；长岛湾10/11–12/9 日限3条；NY Bight 10/15–12/22 日限4条": "Open: 4/1–4/30 bag 2; Long Island Sound 10/11–12/9 bag 3; NY Bight 10/15–12/22 bag 4", "开放期：4/1–5/31 日限3条；8/1–10/14 日限3条；10/15–12/31 日限5条。休渔期：1/1–3/31、6/1–7/31。每船最多10条（包船除外）；≥21英寸奖杯鱼限1条": "Open: 4/1–5/31 bag 3; 8/1–10/14 bag 3; 10/15–12/31 bag 5. Closed: 1/1–3/31, 6/1–7/31. Max 10 per boat (charters excluded); trophy ≥21 in limit 1", "休闲海钓法规，法规每年可能调整，出钓前请核对官方：": "recreational saltwater regs (change yearly — verify official sources):", "年": "", "合法": "Legal", "日限": "Bag", "休渔期": "Closed season", "详见官网": "See official site", "官网": "Official site", "法规": "Regulations", "时令：": "Season: ", "月": "/", "日": "", "日潮汐": " tides", "（美东）": " (ET)", "美国东部时间": "US Eastern", "今天": "Today", "明天": "Tomorrow", "现在": "Now", "下次": "Next ", "未来": "Next", "小时": " hours", "周一": "Mon", "周二": "Tue", "周三": "Wed", "周四": "Thu", "周五": "Fri", "周六": "Sat", "周日": "Sun", "天预报": " day forecast", "选择潮汐日期": "Pick a tide date", "选择日期查看当天潮汐；潮位单位 ft，基准 MLLW": "Pick a date for tides; units ft, datum MLLW", "月相": "Moon phase", "新月": "New moon", "娥眉月": "Waxing crescent", "上弦月": "First quarter", "盈凸月": "Waxing gibbous", "满月": "Full moon", "亏凸月": "Waning gibbous", "下弦月": "Last quarter", "残月": "Waning crescent", "今天的光照与月相": "Today's sun & moon", "日出": "Sunrise", "日落": "Sunset", "晴朗": "Clear", "少云": "Partly cloudy", "阴天": "Overcast", "有雾": "Fog", "毛毛雨": "Drizzle", "有雨": "Rain", "阵雨": "Showers", "雷雨": "Thunderstorms", "有雪": "Snow", "多变": "Variable", "风向": "Wind", "风向不明": "Wind dir unknown", "风速": "Wind speed", "阵风": "Gusts", "浪": "Waves", "浪高": "Wave height", "涌浪": "Swell", "涌": "Swell", "降水": "Precip", "海水温度": "Water temp", "海温": "SST", "当天平均海温": "Avg SST today", "气压": "Pressure", "↑ 上升": "↑ rising", "→ 平稳": "→ steady", "↓ 下降": "↓ falling", "北": "N", "北东北": "NNE", "东北": "NE", "东北东": "ENE", "东": "E", "东南东": "ESE", "东南": "SE", "南东南": "SSE", "南": "S", "南西南": "SSW", "西南": "SW", "西南西": "WSW", "西": "W", "西北西": "WNW", "西北": "NW", "北西北": "NNW", "逐小时天气、风、浪、涌浪和海水温度": "Hourly weather, wind, waves, swell & water temp", "每日最高": "Daily high", "最低气温与最大风速": "daily low & max wind", "高潮": "High tide", "低潮": "Low tide", "高": "High", "低": "Low", "正在涨潮": "Rising", "正在落潮": "Falling", "涨潮中": "Rising", "落潮中": "Falling", "潮位曲线": "Tide curve", "潮汐曲线": "Tide curves", "当天高低潮": "Today's tides", "这一天暂无高低潮数据。": "No tide data for this day.", "曲线按 NOAA 真实高低潮时间与潮高插值；潮位单位 ft，基准 MLLW": "Interpolated from NOAA high/low times & heights; ft, MLLW datum", "最佳出钓窗口": "Best fishing window", "今日最佳窗口": "Today's best window", "次佳": "Runner-up", "最佳": "Best", "潮汐·风浪·气压·鱼口综合": "Tide · wind & waves · pressure · bite combined", "当前评分": "Current score", "评分": "Score", "很好": "Great", "尚可": "Fair", "一般": "OK", "偏弱": "Weak", "整体海况不错，关注下一轮潮水变化。": "Conditions look good overall; watch the next tide change.", "条件尚可，尽量避开阵风较强的时段。": "Conditions are fair; avoid gusty periods.", "条件一般，近岸作钓也请先观察现场风浪。": "Conditions are marginal; check on-site wind & waves before shore fishing.", "风浪偏大，建议改期或选择避风岸线。": "Wind/waves too rough; consider another day or a sheltered shoreline.", "风浪温和，适合关注高潮前后的窗口。": "Calm seas; focus on windows around high tide.", "风浪温和且正在涨潮，当前窗口较好。": "Calm seas and rising tide — good window right now.", "适合安排清晨和傍晚窗口": "Good for dawn & dusk windows", "出钓建议仅供参考。": "Fishing advice is for reference only.", "时令鱼种参考": "Seasonal fish", "根据季节与水温推测，仅供参考。": "Based on season & water temp; for reference only.", "鱼口活跃时段": "Peak bite times", "大咬口": "Major bite", "小咬口": "Minor bite", "天文估算，仅供参考": "Astronomical estimate; for reference only", "仅供参考": "for reference only", "秋季正季，礁石区用蟹做饵，只白天开口": "Peak fall season; fish reefs with crab, daytime bite only", "春秋洄游季": "Spring/fall migration", "凶猛，群游": "Aggressive, schools", "礁石沉船区": "Reefs & wrecks", "数量多，好钓": "Abundant, easy to catch", "沙底拖钓": "Drift sandy bottom", "晨昏窗口": "Dawn/dusk bite", "数据更新时间：": "Data updated: ", "。所有时间均为美国东部时间，潮位基准为": ". All times US Eastern, tidal datum ", "，单位为英尺。": ", units in feet.", "更新于": "Updated", "暂无": "N/A", "查看": "View", "详情": "details", "（": "(", "）": ")", "·": "·", "<button type=\"button\" data-sort=\"score\">按评分排序</button>": "<button type=\"button\" data-sort=\"score\">By score</button>", "<button type=\"button\" data-sort=\"custom\">我的顺序</button></div>": "<button type=\"button\" data-sort=\"custom\">My order</button></div>", "<div class=\"pf-sort\" role=\"group\" aria-label=\"首页钓点排序方式\">": "<div class=\"pf-sort\" role=\"group\" aria-label=\"Home spot sort order\">", "<div class=\"pf-tools\"><button type=\"button\" id=\"pf-add\" class=\"pf-btn\">＋ 添加钓点</button>": "<div class=\"pf-tools\"><button type=\"button\" id=\"pf-add\" class=\"pf-btn\">＋ Add spot</button>", "<button type=\"button\" id=\"pf-manage\" class=\"pf-btn pf-ghost\">管理钓点</button></div>": "<button type=\"button\" id=\"pf-manage\" class=\"pf-btn pf-ghost\">Manage spots</button></div>", "用上下按钮调整“我的顺序”，每次移动都会自动保存。隐藏的钓点会保留原位置。这些设置只保存在你自己的浏览器里。": "Use the up/down buttons to adjust “My order”; every move auto-saves. Hidden spots keep their position. These settings stay in your own browser only.", "已隐藏": "Hidden", "显示中": "Visible", "显示 ": "Show ", "隐藏 ": "Hide ", "顺序已保存": "Order saved", "<div class=\"pf-head\"><div><p class=\"eyebrow\">地点设置</p><h2>管理钓点</h2></div>": "<div class=\"pf-head\"><div><p class=\"eyebrow\">Places</p><h2>Manage spots</h2></div>", "<div class=\"pf-head\"><div><p class=\"eyebrow\">自定义地点</p><h2>添加钓点</h2></div>": "<div class=\"pf-head\"><div><p class=\"eyebrow\">Custom place</p><h2>Add spot</h2></div>", "<div class=\"pf-head\"><div><p class=\"eyebrow\">自定义钓点</p><h2>管理地点</h2></div>": "<div class=\"pf-head\"><div><p class=\"eyebrow\">Custom spots</p><h2>Manage places</h2></div>", "<button type=\"button\" class=\"pf-close\" aria-label=\"关闭\">×</button></div>": "<button type=\"button\" class=\"pf-close\" aria-label=\"Close\">×</button></div>", "<section class=\"pf-sheet\" role=\"dialog\" aria-modal=\"true\" aria-label=\"添加钓点\">": "<section class=\"pf-sheet\" role=\"dialog\" aria-modal=\"true\" aria-label=\"Add spot\">", "<section class=\"pf-sheet\" role=\"dialog\" aria-modal=\"true\" aria-label=\"管理钓点\">": "<section class=\"pf-sheet\" role=\"dialog\" aria-modal=\"true\" aria-label=\"Manage spots\">", "<section class=\"pf-sheet\" role=\"dialog\" aria-modal=\"true\" aria-label=\"管理地点\">": "<section class=\"pf-sheet\" role=\"dialog\" aria-modal=\"true\" aria-label=\"Manage places\">", "<div class=\"pf-tabs\" role=\"tablist\" aria-label=\"选择位置方式\">": "<div class=\"pf-tabs\" role=\"tablist\" aria-label=\"Choose how to set location\">", "<button type=\"button\" data-tab=\"search\" class=\"on\">搜地名</button>": "<button type=\"button\" data-tab=\"search\" class=\"on\">Search place</button>", "<button type=\"button\" data-tab=\"coords\">经纬度</button>": "<button type=\"button\" data-tab=\"coords\">Coordinates</button>", "<button type=\"button\" data-tab=\"maps\">地图链接</button>": "<button type=\"button\" data-tab=\"maps\">Map link</button>", "<button type=\"button\" data-tab=\"current\">当前位置</button></div>": "<button type=\"button\" data-tab=\"current\">Current location</button></div>", "<label class=\"pf-field\"><span>钓点名称</span><input id=\"pf-name\" maxlength=\"40\" placeholder=\"例如：我家门口的码头\"></label>": "<label class=\"pf-field\"><span>Spot name</span><input id=\"pf-name\" maxlength=\"40\" placeholder=\"e.g. the jetty by my place\"></label>", "<label class=\"pf-field\"><span>钓点名称</span><input id=\"pf-name\" maxlength=\"40\" value=\"": "<label class=\"pf-field\"><span>Spot name</span><input id=\"pf-name\" maxlength=\"40\" value=\"", "<input id=\"pf-search-q\" placeholder=\"城市、海滩或码头附近地名\" aria-label=\"输入地名\">": "<input id=\"pf-search-q\" placeholder=\"City, beach or jetty nearby\" aria-label=\"Enter place name\">", "<button type=\"submit\" class=\"pf-btn\">搜索</button></form><div id=\"pf-search-results\" class=\"pf-results\"></div></div>": "<button type=\"submit\" class=\"pf-btn\">Search</button></form><div id=\"pf-search-results\" class=\"pf-results\"></div></div>", "<p class=\"pf-note\">搜索中…</p>": "<p class=\"pf-note\">Searching…</p>", "<p class=\"pf-note\">没有找到地点，请换个关键词。</p>": "<p class=\"pf-note\">No place found; try another keyword.</p>", "地名搜索失败，请稍后重试": "Place search failed; try again later", "<label class=\"pf-field\"><span>纬度</span><input id=\"pf-lat\" inputmode=\"decimal\" placeholder=\"39.3600\"></label>": "<label class=\"pf-field\"><span>Latitude</span><input id=\"pf-lat\" inputmode=\"decimal\" placeholder=\"39.3600\"></label>", "<label class=\"pf-field\"><span>经度</span><input id=\"pf-lng\" inputmode=\"decimal\" placeholder=\"-74.4300\"></label></div>": "<label class=\"pf-field\"><span>Longitude</span><input id=\"pf-lng\" inputmode=\"decimal\" placeholder=\"-74.4300\"></label></div>", "请输入有效经纬度：纬度 -90 至 90，经度 -180 至 180": "Enter valid coordinates: latitude -90 to 90, longitude -180 to 180", "<button type=\"button\" id=\"pf-coords-go\" class=\"pf-btn\">匹配潮汐站</button></div>": "<button type=\"button\" id=\"pf-coords-go\" class=\"pf-btn\">Match tide station</button></div>", "<fieldset><legend>选择潮汐站</legend><p class=\"pf-note\">已自动选中最近站，也可以换一个。</p>": "<fieldset><legend>Choose tide station</legend><p class=\"pf-note\">Nearest station auto-selected; you can change it.</p>", "潮汐站匹配失败，请稍后重试": "Tide station match failed; try again later", "附近没有可用的潮汐站": "No tide station available nearby", "<p class=\"pf-note\">正在从 NOAA 站点列表中匹配最近潮汐站…</p>": "<p class=\"pf-note\">Matching nearest tide station from NOAA list…</p>", "<div class=\"pf-loc\"><span>潮汐站</span><strong>": "<div class=\"pf-loc\"><span>Tide station</span><strong>", "最近 · ": "Nearest · ", "自定义 · ": "Custom · ", "预设 · NOAA ": "Preset · NOAA ", "<label class=\"pf-field\"><span>Google Maps 分享链接</span>": "<label class=\"pf-field\"><span>Google Maps share link</span>", "<input id=\"pf-maps-link\" type=\"url\" placeholder=\"粘贴 maps.app.goo.gl 短链接或 google.com/maps 链接\"></label>": "<input id=\"pf-maps-link\" type=\"url\" placeholder=\"Paste a maps.app.goo.gl short link or google.com/maps link\"></label>", "请先选择位置并匹配潮汐站": "Pick a location and match a tide station first", "请粘贴 Google Maps 分享链接": "Paste a Google Maps share link", "请输入 Google Maps 分享链接": "Enter a Google Maps share link", "链接无效，请检查后重试": "Invalid link; check and retry", "链接里没有找到坐标，请检查链接是否有效，或改用搜地名/输经纬度": "No coordinates found in the link; check it or use place search / coordinates", "短链接解析失败，请检查网络后重试，或改用搜地名/输经纬度": "Short-link resolve failed; check network or use place search / coordinates", "短链接解析失败，请检查链接是否有效": "Short-link resolve failed; check the link", "<button type=\"submit\" class=\"pf-btn\">解析链接</button></form></div>": "<button type=\"submit\" class=\"pf-btn\">Resolve link</button></form></div>", "解析链接": "Resolve link", "解析中…": "Resolving…", "<div class=\"pf-pane\" data-pane=\"current\" hidden><p class=\"pf-note\">使用设备位置只用于匹配天气、海况和附近潮汐站。</p>": "<div class=\"pf-pane\" data-pane=\"current\" hidden><p class=\"pf-note\">Device location is only used to match weather, marine conditions and a nearby tide station.</p>", "<button type=\"button\" id=\"pf-geo-go\" class=\"pf-btn\">使用我的当前位置</button></div>": "<button type=\"button\" id=\"pf-geo-go\" class=\"pf-btn\">Use my current location</button></div>", "使用我的当前位置": "Use my current location", "当前位置": "Current location", "正在定位…": "Locating…", "当前浏览器不支持定位，请改用地名或经纬度": "Geolocation not supported; use place name or coordinates", "无法取得当前位置。请检查定位权限，或改用地名、经纬度。": "Can't get current location. Check location permission, or use place name / coordinates.", "请输入至少两个字的地名": "Enter a place name (at least 2 characters)", "请输入钓点名称": "Enter a spot name", "<fieldset class=\"pf-reg\"><legend>适用法规州</legend>": "<fieldset class=\"pf-reg\"><legend>Regulation state</legend>", "NY 纽约州": "NY New York", "NJ 新泽西州": "NJ New Jersey", "RI 罗德岛州": "RI Rhode Island", "其他": "Other", "已按附近预设钓点自动选择；州界附近请按实际作钓水域确认。": "Auto-selected from nearby preset spots; near state lines, confirm against your actual fishing waters.", "<div class=\"pf-actions\"><button type=\"button\" class=\"pf-btn pf-ghost\" id=\"pf-cancel\">取消</button>": "<div class=\"pf-actions\"><button type=\"button\" class=\"pf-btn pf-ghost\" id=\"pf-cancel\">Cancel</button>", "<button type=\"button\" class=\"pf-btn pf-primary\" id=\"pf-save\" disabled>保存钓点</button></div>": "<button type=\"button\" class=\"pf-btn pf-primary\" id=\"pf-save\" disabled>Save spot</button></div>", "<button type=\"button\" class=\"pf-btn pf-primary\" id=\"pf-save\">保存更改</button></div>": "<button type=\"button\" class=\"pf-btn pf-primary\" id=\"pf-save\">Save changes</button></div>", "保存中…": "Saving…", "<div class=\"pf-actions\" id=\"pf-manage-actions\"><button type=\"button\" class=\"pf-btn pf-danger-link\" id=\"pf-del\">删除钓点</button>": "<div class=\"pf-actions\" id=\"pf-manage-actions\"><button type=\"button\" class=\"pf-btn pf-danger-link\" id=\"pf-del\">Delete spot</button>", "<div id=\"pf-del-confirm\" class=\"pf-del-confirm\" hidden><strong>确定删除“": "<div id=\"pf-del-confirm\" class=\"pf-del-confirm\" hidden><strong>Delete “", "”吗？</strong>": "”?</strong>", "<span>删除后无法恢复，预设钓点不受影响。</span>": "<span>Can't be undone; preset spots are unaffected.</span>", "<div><button type=\"button\" class=\"pf-btn pf-ghost\" id=\"pf-del-no\">保留</button>": "<div><button type=\"button\" class=\"pf-btn pf-ghost\" id=\"pf-del-no\">Keep</button>", "<button type=\"button\" class=\"pf-btn pf-danger\" id=\"pf-del-yes\">确认删除</button></div></div>": "<button type=\"button\" class=\"pf-btn pf-danger\" id=\"pf-del-yes\">Delete</button></div></div>", "<span>所选位置</span><strong>": "<span>Selected location</span><strong>", "管理": "Manage", "编辑": "Edit", "站": "station", "<div style=\"text-align:center;max-width:22rem\"><p style=\"font-size:1.05rem;margin:0 0 .6rem\">数据获取失败，请检查网络后重试</p><p style=\"opacity:.65;font-size:.85rem;margin:0 0 1rem\">": "<div style=\"text-align:center;max-width:22rem\"><p style=\"font-size:1.05rem;margin:0 0 .6rem\">Data load failed; check your network and retry</p><p style=\"opacity:.65;font-size:.85rem;margin:0 0 1rem\">", "</p><button onclick=\"location.reload()\" style=\"padding:.6rem 1.6rem;border-radius:999px;border:1px solid #f2c760;background:transparent;color:inherit;font-size:1rem\">重试</button></div>": "</p><button onclick=\"location.reload()\" style=\"padding:.6rem 1.6rem;border-radius:999px;border:1px solid #f2c760;background:transparent;color:inherit;font-size:1rem\">Retry</button></div>", "数据更新失败": "Data update failed", "<div class=\"pf-empty\"><strong>首页暂时没有显示的钓点</strong><span>到“管理钓点”重新显示预设地点，或添加一个自己的钓点。</span><button type=\"button\" class=\"pf-btn\" id=\"pf-empty-manage\">管理钓点</button></div>": "<div class=\"pf-empty\"><strong>No spots to show on home</strong><span>Re-enable preset spots under “Manage spots”, or add your own.</span><button type=\"button\" class=\"pf-btn\" id=\"pf-empty-manage\">Manage spots</button></div>", "<p class=\"pf-note\">用上下按钮调整“我的顺序”，每次移动都会自动保存。隐藏的钓点会保留原位置。这些设置只保存在你自己的浏览器里。</p>": "<p class=\"pf-note\">Use the up/down buttons to adjust “My order”; every move auto-saves. Hidden spots keep their position. These settings stay in your own browser only.</p>", "static_title": "Fishing Tide & Weather", "static_h1": "Where to fish tonight?<br><span>Check tide, wind & waves first.</span>", "static_intro_a": "New York, New Jersey & Rhode Island", "static_intro_b": "coastal spots · 7-day forecast. Compare tides, wind & waves at a glance.", "static_count": "spots", "static_compare": "side-by-side", "static_48h": "48 hours", "static_tidecurves": "tide curves", "static_7d": "7 days", "static_marine": "marine forecast", "static_ranking": "Fishing ranking", "static_ranking_sub": "Best conditions first<br>Tap a card for details", "static_back": "← Back to comparison", "static_src": "Data: NOAA Tides & Currents, Open-Meteo Weather & Marine Weather.", "static_disclaimer": "Fresh data loads on every open. Tides, weather & scores are for reference only — heed on-site alerts and conditions.", "static_loading": "Loading latest tide & weather data…", "static_loading_sub": "First load takes a few seconds", "static_daily": "Daily high / low & max wind", "static_lang_btn": "中文", "<p class=\"tide-empty\">这一天暂无高低潮数据。</p>": "<p class=\"tide-empty\">No tide data for this day.</p>", "近": "Last ", "风": " wind", "<div class=\"pf-order-btns\"><button type=\"button\" aria-label=\"上移 ": "<div class=\"pf-order-btns\"><button type=\"button\" aria-label=\"Move up ", "<button type=\"button\" aria-label=\"下移 ": "<button type=\"button\" aria-label=\"Move down "};
+let LANG = 'zh';
+try { LANG = localStorage.getItem('fishing_lang') || 'zh'; } catch (e) {}
+function T(str) { return (LANG === 'en' && I18N_EN[str] !== undefined) ? I18N_EN[str] : str; }
+function fishName(f) { return (LANG === 'en' && f && f.english) ? f.english : (f ? f.name : ''); }
+const __staticOrig = {};
+function applyStaticI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (!(__staticOrig[k])) __staticOrig[k] = el.innerHTML;
+    el.innerHTML = (LANG === 'en' && I18N_EN[k] !== undefined) ? I18N_EN[k] : __staticOrig[k];
+  });
+  const back = document.getElementById('back');
+  if (back) back.setAttribute('aria-label', LANG === 'en' ? 'Back to spot comparison' : '返回钓点比较');
+  document.title = LANG === 'en' ? I18N_EN['static_title'] : '钓鱼潮汐天气公开版';
+}
+let __curDetail = -1, __curDateIdx = 0;
+function setLang(l) {
+  LANG = l;
+  try { localStorage.setItem('fishing_lang', l); } catch (e) {}
+  document.documentElement.lang = l === 'en' ? 'en' : 'zh-CN';
+  applyStaticI18n();
+  const lt = document.getElementById('lang-toggle');
+  if (lt) lt.textContent = l === 'en' ? '中文' : 'EN';
+  const d = document.getElementById('detail');
+  if (d && d.classList.contains('active') && __curDetail >= 0) { showDetail(__curDetail, __curDateIdx, false); }
+  else if (typeof renderHome === 'function') { renderHome(); }
+}
+// =============== /i18n =================
+
 const SPOT_META=[
 {"name":"Atlantic City, NJ","station":"8534720","lat":39.356667,"lng":-74.41805},
 {"name":"Newport, RI","station":"8452660","lat":41.504333,"lng":-71.32614},
@@ -483,15 +515,15 @@ function __mapsLabel(u) {
   return label ? label.slice(0, 80) : null;
 }
 function __parseMapsUrl(u) {
-  if (u.protocol !== 'https:') return { error: '\u94fe\u63a5\u65e0\u6548\uff0c\u8bf7\u68c0\u67e5\u540e\u91cd\u8bd5' };
-  if (!['google.com', 'www.google.com', 'maps.google.com'].includes(u.hostname)) return { error: '\u8bf7\u8f93\u5165 Google Maps \u5206\u4eab\u94fe\u63a5' };
+  if (u.protocol !== 'https:') return { error: T("链接无效，请检查后重试") };
+  if (!['google.com', 'www.google.com', 'maps.google.com'].includes(u.hostname)) return { error: T("请输入 Google Maps 分享链接") };
   const c = __mapsCoords(u);
-  if (!c) return { error: '\u94fe\u63a5\u91cc\u6ca1\u6709\u627e\u5230\u5750\u6807\uff0c\u8bf7\u68c0\u67e5\u94fe\u63a5\u662f\u5426\u6709\u6548\uff0c\u6216\u6539\u7528\u641c\u5730\u540d/\u8f93\u7ecf\u7eac\u5ea6' };
+  if (!c) return { error: T("链接里没有找到坐标，请检查链接是否有效，或改用搜地名/输经纬度") };
   return { lat: c.lat, lng: c.lng, label: __mapsLabel(u) || (c.lat.toFixed(5) + ', ' + c.lng.toFixed(5)) };
 }
 function __parseMapsLink(raw) {
   let u;
-  try { u = new URL(raw.trim()); } catch (e) { return { error: '\u94fe\u63a5\u65e0\u6548\uff0c\u8bf7\u68c0\u67e5\u540e\u91cd\u8bd5' }; }
+  try { u = new URL(raw.trim()); } catch (e) { return { error: T("链接无效，请检查后重试") }; }
   if (u.hostname === 'maps.app.goo.gl') return { short: true, url: u.toString() };
   return __parseMapsUrl(u);
 }
@@ -525,10 +557,10 @@ function __logSpot(c) {
 }
 
 /* ---------- sheets ---------- */
-const PF_REG_LABELS = { NY: 'NY \u7ebd\u7ea6\u5dde', NJ: 'NJ \u65b0\u6cfd\u897f\u5dde', RI: 'RI \u7f57\u5fb7\u5c9b\u5dde', OTHER: '\u5176\u4ed6' };
+const PF_REG_LABELS = { NY: T("NY 纽约州"), NJ: T("NJ 新泽西州"), RI: T("RI 罗德岛州"), OTHER: T("其他") };
 function __regPickerHTML(value, note, group) {
   const g = group || 'pf-reg';
-  return '<fieldset class="pf-reg"><legend>\u9002\u7528\u6cd5\u89c4\u5dde</legend>' +
+  return T("<fieldset class=\"pf-reg\"><legend>适用法规州</legend>") +
     (note ? '<p class="pf-note">' + esc(note) + '</p>' : '') +
     '<div>' + ['NY', 'NJ', 'RI', 'OTHER'].map(s =>
       '<label class="' + (value === s ? 'on' : '') + '"><input type="radio" name="' + g + '" value="' + s + '"' + (value === s ? ' checked' : '') + '><span>' + PF_REG_LABELS[s] + '</span></label>'
@@ -564,34 +596,34 @@ function __readReg(bd) {
 /* ----- Add spot sheet ----- */
 function __openAddSpot() {
   const bd = __openBackdrop(
-    '<section class="pf-sheet" role="dialog" aria-modal="true" aria-label="\u6dfb\u52a0\u9493\u70b9">' +
-    '<div class="pf-head"><div><p class="eyebrow">\u81ea\u5b9a\u4e49\u5730\u70b9</p><h2>\u6dfb\u52a0\u9493\u70b9</h2></div>' +
-    '<button type="button" class="pf-close" aria-label="\u5173\u95ed">\u00d7</button></div>' +
-    '<label class="pf-field"><span>\u9493\u70b9\u540d\u79f0</span><input id="pf-name" maxlength="40" placeholder="\u4f8b\u5982\uff1a\u6211\u5bb6\u95e8\u53e3\u7684\u7801\u5934"></label>' +
-    '<div class="pf-tabs" role="tablist" aria-label="\u9009\u62e9\u4f4d\u7f6e\u65b9\u5f0f">' +
-    '<button type="button" data-tab="search" class="on">\u641c\u5730\u540d</button>' +
-    '<button type="button" data-tab="coords">\u7ecf\u7eac\u5ea6</button>' +
-    '<button type="button" data-tab="maps">\u5730\u56fe\u94fe\u63a5</button>' +
-    '<button type="button" data-tab="current">\u5f53\u524d\u4f4d\u7f6e</button></div>' +
+    T("<section class=\"pf-sheet\" role=\"dialog\" aria-modal=\"true\" aria-label=\"添加钓点\">") +
+    T("<div class=\"pf-head\"><div><p class=\"eyebrow\">自定义地点</p><h2>添加钓点</h2></div>") +
+    T("<button type=\"button\" class=\"pf-close\" aria-label=\"关闭\">×</button></div>") +
+    T("<label class=\"pf-field\"><span>钓点名称</span><input id=\"pf-name\" maxlength=\"40\" placeholder=\"例如：我家门口的码头\"></label>") +
+    T("<div class=\"pf-tabs\" role=\"tablist\" aria-label=\"选择位置方式\">") +
+    T("<button type=\"button\" data-tab=\"search\" class=\"on\">搜地名</button>") +
+    T("<button type=\"button\" data-tab=\"coords\">经纬度</button>") +
+    T("<button type=\"button\" data-tab=\"maps\">地图链接</button>") +
+    T("<button type=\"button\" data-tab=\"current\">当前位置</button></div>") +
     '<div class="pf-pane" data-pane="search"><form id="pf-search-form" class="pf-row">' +
-    '<input id="pf-search-q" placeholder="\u57ce\u5e02\u3001\u6d77\u6ee9\u6216\u7801\u5934\u9644\u8fd1\u5730\u540d" aria-label="\u8f93\u5165\u5730\u540d">' +
-    '<button type="submit" class="pf-btn">\u641c\u7d22</button></form><div id="pf-search-results" class="pf-results"></div></div>' +
+    T("<input id=\"pf-search-q\" placeholder=\"城市、海滩或码头附近地名\" aria-label=\"输入地名\">") +
+    T("<button type=\"submit\" class=\"pf-btn\">搜索</button></form><div id=\"pf-search-results\" class=\"pf-results\"></div></div>") +
     '<div class="pf-pane" data-pane="coords" hidden><div class="pf-coord-grid">' +
-    '<label class="pf-field"><span>\u7eac\u5ea6</span><input id="pf-lat" inputmode="decimal" placeholder="39.3600"></label>' +
-    '<label class="pf-field"><span>\u7ecf\u5ea6</span><input id="pf-lng" inputmode="decimal" placeholder="-74.4300"></label></div>' +
-    '<button type="button" id="pf-coords-go" class="pf-btn">\u5339\u914d\u6f6e\u6c50\u7ad9</button></div>' +
+    T("<label class=\"pf-field\"><span>纬度</span><input id=\"pf-lat\" inputmode=\"decimal\" placeholder=\"39.3600\"></label>") +
+    T("<label class=\"pf-field\"><span>经度</span><input id=\"pf-lng\" inputmode=\"decimal\" placeholder=\"-74.4300\"></label></div>") +
+    T("<button type=\"button\" id=\"pf-coords-go\" class=\"pf-btn\">匹配潮汐站</button></div>") +
     '<div class="pf-pane" data-pane="maps" hidden><form id="pf-maps-form" class="pf-col">' +
-    '<label class="pf-field"><span>Google Maps \u5206\u4eab\u94fe\u63a5</span>' +
-    '<input id="pf-maps-link" type="url" placeholder="\u7c98\u8d34 maps.app.goo.gl \u77ed\u94fe\u63a5\u6216 google.com/maps \u94fe\u63a5"></label>' +
-    '<button type="submit" class="pf-btn">\u89e3\u6790\u94fe\u63a5</button></form></div>' +
-    '<div class="pf-pane" data-pane="current" hidden><p class="pf-note">\u4f7f\u7528\u8bbe\u5907\u4f4d\u7f6e\u53ea\u7528\u4e8e\u5339\u914d\u5929\u6c14\u3001\u6d77\u51b5\u548c\u9644\u8fd1\u6f6e\u6c50\u7ad9\u3002</p>' +
-    '<button type="button" id="pf-geo-go" class="pf-btn">\u4f7f\u7528\u6211\u7684\u5f53\u524d\u4f4d\u7f6e</button></div>' +
+    T("<label class=\"pf-field\"><span>Google Maps 分享链接</span>") +
+    T("<input id=\"pf-maps-link\" type=\"url\" placeholder=\"粘贴 maps.app.goo.gl 短链接或 google.com/maps 链接\"></label>") +
+    T("<button type=\"submit\" class=\"pf-btn\">解析链接</button></form></div>") +
+    T("<div class=\"pf-pane\" data-pane=\"current\" hidden><p class=\"pf-note\">使用设备位置只用于匹配天气、海况和附近潮汐站。</p>") +
+    T("<button type=\"button\" id=\"pf-geo-go\" class=\"pf-btn\">使用我的当前位置</button></div>") +
     '<div id="pf-loc" class="pf-loc" hidden></div>' +
     '<div id="pf-regwrap" hidden></div>' +
     '<div id="pf-stations" class="pf-stations" hidden></div>' +
     '<div class="pf-msg" role="alert" hidden></div>' +
-    '<div class="pf-actions"><button type="button" class="pf-btn pf-ghost" id="pf-cancel">\u53d6\u6d88</button>' +
-    '<button type="button" class="pf-btn pf-primary" id="pf-save" disabled>\u4fdd\u5b58\u9493\u70b9</button></div>' +
+    T("<div class=\"pf-actions\"><button type=\"button\" class=\"pf-btn pf-ghost\" id=\"pf-cancel\">取消</button>") +
+    T("<button type=\"button\" class=\"pf-btn pf-primary\" id=\"pf-save\" disabled>保存钓点</button></div>") +
     '</section>'
   );
   const $ = sel => bd.querySelector(sel);
@@ -612,25 +644,25 @@ function __openAddSpot() {
     if (!nameInput.value.trim() && suggestedName) nameInput.value = suggestedName.slice(0, 40);
     const locBox = $('#pf-loc');
     locBox.hidden = false;
-    locBox.innerHTML = '<span>\u6240\u9009\u4f4d\u7f6e</span><strong>' + esc(label) + '</strong><small>' + lat.toFixed(5) + ', ' + lng.toFixed(5) + '</small>';
+    locBox.innerHTML = T("<span>所选位置</span><strong>") + esc(label) + '</strong><small>' + lat.toFixed(5) + ', ' + lng.toFixed(5) + '</small>';
     const regWrap = $('#pf-regwrap');
     regWrap.hidden = false;
-    regWrap.innerHTML = __regPickerHTML(state.reg, '已按附近预设钓点自动选择；州界附近请按实际作钓水域确认。', 'pf-reg-add');
+    regWrap.innerHTML = __regPickerHTML(state.reg, T("已按附近预设钓点自动选择；州界附近请按实际作钓水域确认。"), 'pf-reg-add');
     regWrap.querySelectorAll('input').forEach(r => r.addEventListener('change', () => { state.reg = r.value; }));
     $('#pf-save').disabled = true;
     const stBox = $('#pf-stations');
     stBox.hidden = false;
-    stBox.innerHTML = '<p class="pf-note">\u6b63\u5728\u4ece NOAA \u7ad9\u70b9\u5217\u8868\u4e2d\u5339\u914d\u6700\u8fd1\u6f6e\u6c50\u7ad9\u2026</p>';
+    stBox.innerHTML = T("<p class=\"pf-note\">正在从 NOAA 站点列表中匹配最近潮汐站…</p>");
     __pfMsg(bd, '');
     try {
       await __loadStations();
       state.stations = __nearestStations(lat, lng, 5);
       state.stationId = state.stations[0] ? state.stations[0].id : '';
-      if (!state.stations.length) { stBox.innerHTML = ''; __pfMsg(bd, '\u9644\u8fd1\u6ca1\u6709\u53ef\u7528\u7684\u6f6e\u6c50\u7ad9'); return; }
-      stBox.innerHTML = '<fieldset><legend>\u9009\u62e9\u6f6e\u6c50\u7ad9</legend><p class="pf-note">\u5df2\u81ea\u52a8\u9009\u4e2d\u6700\u8fd1\u7ad9\uff0c\u4e5f\u53ef\u4ee5\u6362\u4e00\u4e2a\u3002</p>' +
+      if (!state.stations.length) { stBox.innerHTML = ''; __pfMsg(bd, T("附近没有可用的潮汐站")); return; }
+      stBox.innerHTML = T("<fieldset><legend>选择潮汐站</legend><p class=\"pf-note\">已自动选中最近站，也可以换一个。</p>") +
         state.stations.map((s, i) => '<label class="pf-radio' + (s.id === state.stationId ? ' on' : '') + '">' +
           '<input type="radio" name="pf-station" value="' + esc(s.id) + '"' + (s.id === state.stationId ? ' checked' : '') + '>' +
-          '<span><strong>' + esc(s.name) + '</strong><small>' + (i === 0 ? '\u6700\u8fd1 \u00b7 ' : '') + s.d.toFixed(1) + ' km \u00b7 NOAA ' + esc(s.id) + '</small></span></label>').join('') +
+          '<span><strong>' + esc(s.name) + '</strong><small>' + (i === 0 ? T("最近 · ") : '') + s.d.toFixed(1) + ' km \u00b7 NOAA ' + esc(s.id) + '</small></span></label>').join('') +
         '</fieldset>';
       stBox.querySelectorAll('input').forEach(r => r.addEventListener('change', () => {
         state.stationId = r.value;
@@ -640,20 +672,20 @@ function __openAddSpot() {
       $('#pf-save').disabled = false;
     } catch (e) {
       stBox.innerHTML = '';
-      __pfMsg(bd, '\u6f6e\u6c50\u7ad9\u5339\u914d\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5');
+      __pfMsg(bd, T("潮汐站匹配失败，请稍后重试"));
     }
   }
 
   $('#pf-search-form').addEventListener('submit', async e => {
     e.preventDefault();
     const q = $('#pf-search-q').value.trim();
-    if (q.length < 2) { __pfMsg(bd, '\u8bf7\u8f93\u5165\u81f3\u5c11\u4e24\u4e2a\u5b57\u7684\u5730\u540d'); return; }
+    if (q.length < 2) { __pfMsg(bd, T("请输入至少两个字的地名")); return; }
     const box = $('#pf-search-results');
-    box.innerHTML = '<p class="pf-note">\u641c\u7d22\u4e2d\u2026</p>';
+    box.innerHTML = T("<p class=\"pf-note\">搜索中…</p>");
     __pfMsg(bd, '');
     try {
       const results = await __searchPlaces(q);
-      if (!results.length) { box.innerHTML = '<p class="pf-note">\u6ca1\u6709\u627e\u5230\u5730\u70b9\uff0c\u8bf7\u6362\u4e2a\u5173\u952e\u8bcd\u3002</p>'; return; }
+      if (!results.length) { box.innerHTML = T("<p class=\"pf-note\">没有找到地点，请换个关键词。</p>"); return; }
       box.innerHTML = '';
       results.forEach(r => {
         const b = document.createElement('button');
@@ -663,13 +695,13 @@ function __openAddSpot() {
         b.addEventListener('click', () => chooseLocation(r.lat, r.lng, r.label, r.name));
         box.appendChild(b);
       });
-    } catch (err) { box.innerHTML = ''; __pfMsg(bd, '\u5730\u540d\u641c\u7d22\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5'); }
+    } catch (err) { box.innerHTML = ''; __pfMsg(bd, T("地名搜索失败，请稍后重试")); }
   });
 
   $('#pf-coords-go').addEventListener('click', () => {
     const lat = Number($('#pf-lat').value), lng = Number($('#pf-lng').value);
     if (!Number.isFinite(lat) || lat < -90 || lat > 90 || !Number.isFinite(lng) || lng < -180 || lng > 180) {
-      __pfMsg(bd, '\u8bf7\u8f93\u5165\u6709\u6548\u7ecf\u7eac\u5ea6\uff1a\u7eac\u5ea6 -90 \u81f3 90\uff0c\u7ecf\u5ea6 -180 \u81f3 180'); return;
+      __pfMsg(bd, T("请输入有效经纬度：纬度 -90 至 90，经度 -180 至 180")); return;
     }
     chooseLocation(lat, lng, lat.toFixed(5) + ', ' + lng.toFixed(5));
   });
@@ -677,23 +709,23 @@ function __openAddSpot() {
   $('#pf-maps-form').addEventListener('submit', async e => {
     e.preventDefault();
     const raw = $('#pf-maps-link').value;
-    if (!raw.trim()) { __pfMsg(bd, '\u8bf7\u7c98\u8d34 Google Maps \u5206\u4eab\u94fe\u63a5'); return; }
+    if (!raw.trim()) { __pfMsg(bd, T("请粘贴 Google Maps 分享链接")); return; }
     const submitBtn = bd.querySelector('#pf-maps-form button[type="submit"]');
     const parsed = __parseMapsLink(raw);
     if (parsed.error) { __pfMsg(bd, parsed.error); return; }
     if (parsed.short) {
-      submitBtn.disabled = true; submitBtn.textContent = '\u89e3\u6790\u4e2d\u2026';
+      submitBtn.disabled = true; submitBtn.textContent = T("解析中…");
       __pfMsg(bd, '');
       try {
         const target = await __resolveShortLink(parsed.url);
-        if (!target) { __pfMsg(bd, '\u77ed\u94fe\u63a5\u89e3\u6790\u5931\u8d25\uff0c\u8bf7\u68c0\u67e5\u7f51\u7edc\u540e\u91cd\u8bd5\uff0c\u6216\u6539\u7528\u641c\u5730\u540d/\u8f93\u7ecf\u7eac\u5ea6'); return; }
+        if (!target) { __pfMsg(bd, T("短链接解析失败，请检查网络后重试，或改用搜地名/输经纬度")); return; }
         let u2;
-        try { u2 = new URL(target); } catch (err) { __pfMsg(bd, '\u77ed\u94fe\u63a5\u89e3\u6790\u5931\u8d25\uff0c\u8bf7\u68c0\u67e5\u94fe\u63a5\u662f\u5426\u6709\u6548'); return; }
+        try { u2 = new URL(target); } catch (err) { __pfMsg(bd, T("短链接解析失败，请检查链接是否有效")); return; }
         const p2 = __parseMapsUrl(u2);
         if (p2.error) { __pfMsg(bd, p2.error); return; }
         chooseLocation(p2.lat, p2.lng, p2.label, p2.label);
       } finally {
-        submitBtn.disabled = false; submitBtn.textContent = '\u89e3\u6790\u94fe\u63a5';
+        submitBtn.disabled = false; submitBtn.textContent = T("解析链接");
       }
       return;
     }
@@ -702,24 +734,24 @@ function __openAddSpot() {
   });
 
   $('#pf-geo-go').addEventListener('click', () => {
-    if (!navigator.geolocation) { __pfMsg(bd, '\u5f53\u524d\u6d4f\u89c8\u5668\u4e0d\u652f\u6301\u5b9a\u4f4d\uff0c\u8bf7\u6539\u7528\u5730\u540d\u6216\u7ecf\u7eac\u5ea6'); return; }
+    if (!navigator.geolocation) { __pfMsg(bd, T("当前浏览器不支持定位，请改用地名或经纬度")); return; }
     const btn = $('#pf-geo-go');
-    btn.disabled = true; btn.textContent = '\u6b63\u5728\u5b9a\u4f4d\u2026';
+    btn.disabled = true; btn.textContent = T("正在定位…");
     __pfMsg(bd, '');
     navigator.geolocation.getCurrentPosition(
-      pos => chooseLocation(pos.coords.latitude, pos.coords.longitude, '\u5f53\u524d\u4f4d\u7f6e').then(() => { btn.disabled = false; btn.textContent = '\u4f7f\u7528\u6211\u7684\u5f53\u524d\u4f4d\u7f6e'; }),
-      () => { btn.disabled = false; btn.textContent = '\u4f7f\u7528\u6211\u7684\u5f53\u524d\u4f4d\u7f6e'; __pfMsg(bd, '\u65e0\u6cd5\u53d6\u5f97\u5f53\u524d\u4f4d\u7f6e\u3002\u8bf7\u68c0\u67e5\u5b9a\u4f4d\u6743\u9650\uff0c\u6216\u6539\u7528\u5730\u540d\u3001\u7ecf\u7eac\u5ea6\u3002'); },
+      pos => chooseLocation(pos.coords.latitude, pos.coords.longitude, T("当前位置")).then(() => { btn.disabled = false; btn.textContent = T("使用我的当前位置"); }),
+      () => { btn.disabled = false; btn.textContent = T("使用我的当前位置"); __pfMsg(bd, T("无法取得当前位置。请检查定位权限，或改用地名、经纬度。")); },
       { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 }
     );
   });
 
   $('#pf-save').addEventListener('click', async () => {
     const name = $('#pf-name').value.trim();
-    if (!name) { __pfMsg(bd, '\u8bf7\u8f93\u5165\u9493\u70b9\u540d\u79f0'); return; }
-    if (!state.loc || !state.stationId) { __pfMsg(bd, '\u8bf7\u5148\u9009\u62e9\u4f4d\u7f6e\u5e76\u5339\u914d\u6f6e\u6c50\u7ad9'); return; }
+    if (!name) { __pfMsg(bd, T("请输入钓点名称")); return; }
+    if (!state.loc || !state.stationId) { __pfMsg(bd, T("请先选择位置并匹配潮汐站")); return; }
     const st = state.stations.find(s => s.id === state.stationId) || state.stations[0];
     const btn = $('#pf-save');
-    btn.disabled = true; btn.textContent = '\u4fdd\u5b58\u4e2d\u2026';
+    btn.disabled = true; btn.textContent = T("保存中…");
     const custom = {
       id: 'c' + Date.now().toString(36),
       name: name.slice(0, 40),
@@ -739,19 +771,19 @@ function __openManageSpot(customId) {
   const c = PF.customSpots.find(x => x.id === customId);
   if (!c) return;
   const bd = __openBackdrop(
-    '<section class="pf-sheet" role="dialog" aria-modal="true" aria-label="\u7ba1\u7406\u5730\u70b9">' +
-    '<div class="pf-head"><div><p class="eyebrow">\u81ea\u5b9a\u4e49\u9493\u70b9</p><h2>\u7ba1\u7406\u5730\u70b9</h2></div>' +
-    '<button type="button" class="pf-close" aria-label="\u5173\u95ed">\u00d7</button></div>' +
-    '<label class="pf-field"><span>\u9493\u70b9\u540d\u79f0</span><input id="pf-name" maxlength="40" value="' + esc(c.name) + '"></label>' +
-    '<div class="pf-loc"><span>\u6f6e\u6c50\u7ad9</span><strong>' + esc(c.stationName) + '</strong><small>' + c.stationDistanceKm + ' km \u00b7 NOAA ' + esc(c.station) + '</small></div>' +
+    T("<section class=\"pf-sheet\" role=\"dialog\" aria-modal=\"true\" aria-label=\"管理地点\">") +
+    T("<div class=\"pf-head\"><div><p class=\"eyebrow\">自定义钓点</p><h2>管理地点</h2></div>") +
+    T("<button type=\"button\" class=\"pf-close\" aria-label=\"关闭\">×</button></div>") +
+    T("<label class=\"pf-field\"><span>钓点名称</span><input id=\"pf-name\" maxlength=\"40\" value=\"") + esc(c.name) + '"></label>' +
+    T("<div class=\"pf-loc\"><span>潮汐站</span><strong>") + esc(c.stationName) + '</strong><small>' + c.stationDistanceKm + ' km \u00b7 NOAA ' + esc(c.station) + '</small></div>' +
     '<div id="pf-regwrap">' + __regPickerHTML(c.regulationState, '', 'pf-reg-manage') + '</div>' +
     '<div class="pf-msg" role="alert" hidden></div>' +
-    '<div id="pf-del-confirm" class="pf-del-confirm" hidden><strong>\u786e\u5b9a\u5220\u9664\u201c' + esc(c.name) + '\u201d\u5417\uff1f</strong>' +
-    '<span>\u5220\u9664\u540e\u65e0\u6cd5\u6062\u590d\uff0c\u9884\u8bbe\u9493\u70b9\u4e0d\u53d7\u5f71\u54cd\u3002</span>' +
-    '<div><button type="button" class="pf-btn pf-ghost" id="pf-del-no">\u4fdd\u7559</button>' +
-    '<button type="button" class="pf-btn pf-danger" id="pf-del-yes">\u786e\u8ba4\u5220\u9664</button></div></div>' +
-    '<div class="pf-actions" id="pf-manage-actions"><button type="button" class="pf-btn pf-danger-link" id="pf-del">\u5220\u9664\u9493\u70b9</button>' +
-    '<button type="button" class="pf-btn pf-primary" id="pf-save">\u4fdd\u5b58\u66f4\u6539</button></div>' +
+    T("<div id=\"pf-del-confirm\" class=\"pf-del-confirm\" hidden><strong>确定删除“") + esc(c.name) + T("”吗？</strong>") +
+    T("<span>删除后无法恢复，预设钓点不受影响。</span>") +
+    T("<div><button type=\"button\" class=\"pf-btn pf-ghost\" id=\"pf-del-no\">保留</button>") +
+    T("<button type=\"button\" class=\"pf-btn pf-danger\" id=\"pf-del-yes\">确认删除</button></div></div>") +
+    T("<div class=\"pf-actions\" id=\"pf-manage-actions\"><button type=\"button\" class=\"pf-btn pf-danger-link\" id=\"pf-del\">删除钓点</button>") +
+    T("<button type=\"button\" class=\"pf-btn pf-primary\" id=\"pf-save\">保存更改</button></div>") +
     '</section>'
   );
   const $ = sel => bd.querySelector(sel);
@@ -764,7 +796,7 @@ function __openManageSpot(customId) {
   });
   $('#pf-save').addEventListener('click', async () => {
     const name = $('#pf-name').value.trim();
-    if (!name) { __pfMsg(bd, '\u8bf7\u8f93\u5165\u9493\u70b9\u540d\u79f0'); return; }
+    if (!name) { __pfMsg(bd, T("请输入钓点名称")); return; }
     c.name = name.slice(0, 40);
     c.regulationState = __readReg(bd);
     __pfSave();
@@ -775,18 +807,18 @@ function __openManageSpot(customId) {
 /* ----- Manage all spots ----- */
 function __pfRowMeta(id) {
   const custom = PF.customSpots.find(c => c.id === id);
-  if (custom) return { id, name: custom.name, sub: '\u81ea\u5b9a\u4e49 \u00b7 ' + custom.stationName, isCustom: true };
+  if (custom) return { id, name: custom.name, sub: T("自定义 · ") + custom.stationName, isCustom: true };
   const m = SPOT_META.find(x => __presetId(x) === id);
-  if (m) return { id, name: m.name, sub: '\u9884\u8bbe \u00b7 NOAA ' + m.station, isCustom: false };
+  if (m) return { id, name: m.name, sub: T("预设 · NOAA ") + m.station, isCustom: false };
   return null;
 }
 function __openManageAll() {
   __pfSyncOrder();
   const bd = __openBackdrop(
-    '<section class="pf-sheet" role="dialog" aria-modal="true" aria-label="\u7ba1\u7406\u9493\u70b9">' +
-    '<div class="pf-head"><div><p class="eyebrow">\u5730\u70b9\u8bbe\u7f6e</p><h2>\u7ba1\u7406\u9493\u70b9</h2></div>' +
-    '<button type="button" class="pf-close" aria-label="\u5173\u95ed">\u00d7</button></div>' +
-    '<p class="pf-note">\u7528\u4e0a\u4e0b\u6309\u94ae\u8c03\u6574\u201c\u6211\u7684\u987a\u5e8f\u201d\uff0c\u6bcf\u6b21\u79fb\u52a8\u90fd\u4f1a\u81ea\u52a8\u4fdd\u5b58\u3002\u9690\u85cf\u7684\u9493\u70b9\u4f1a\u4fdd\u7559\u539f\u4f4d\u7f6e\u3002\u8fd9\u4e9b\u8bbe\u7f6e\u53ea\u4fdd\u5b58\u5728\u4f60\u81ea\u5df1\u7684\u6d4f\u89c8\u5668\u91cc\u3002</p>' +
+    T("<section class=\"pf-sheet\" role=\"dialog\" aria-modal=\"true\" aria-label=\"管理钓点\">") +
+    T("<div class=\"pf-head\"><div><p class=\"eyebrow\">地点设置</p><h2>管理钓点</h2></div>") +
+    T("<button type=\"button\" class=\"pf-close\" aria-label=\"关闭\">×</button></div>") +
+    T("<p class=\"pf-note\">用上下按钮调整“我的顺序”，每次移动都会自动保存。隐藏的钓点会保留原位置。这些设置只保存在你自己的浏览器里。</p>") +
     '<div id="pf-rows" class="pf-rows"></div>' +
     '<div class="pf-msg" role="status" hidden></div>' +
     '</section>'
@@ -802,8 +834,8 @@ function __openManageAll() {
       const row = document.createElement('div');
       row.className = 'pf-row-item' + (hidden ? ' is-hidden' : '');
       row.innerHTML =
-        '<div class="pf-order-btns"><button type="button" aria-label="\u4e0a\u79fb ' + esc(meta.name) + '"' + (idx === 0 ? ' disabled' : '') + '>\u2191</button>' +
-        '<button type="button" aria-label="\u4e0b\u79fb ' + esc(meta.name) + '"' + (idx === PF.order.length - 1 ? ' disabled' : '') + '>\u2193</button></div>' +
+        T("<div class=\"pf-order-btns\"><button type=\"button\" aria-label=\"上移 ") + esc(meta.name) + '"' + (idx === 0 ? ' disabled' : '') + '>\u2191</button>' +
+        T("<button type=\"button\" aria-label=\"下移 ") + esc(meta.name) + '"' + (idx === PF.order.length - 1 ? ' disabled' : '') + '>\u2193</button></div>' +
         '<div class="pf-row-copy"><strong>' + esc(meta.name) + '</strong><small>' + esc(meta.sub) + '</small></div>' +
         '<div class="pf-row-act"></div>';
       const [up, down] = row.querySelectorAll('.pf-order-btns button');
@@ -812,7 +844,7 @@ function __openManageAll() {
       const act = row.querySelector('.pf-row-act');
       if (meta.isCustom) {
         const b = document.createElement('button');
-        b.type = 'button'; b.className = 'pf-btn pf-ghost pf-small'; b.textContent = '\u7f16\u8f91';
+        b.type = 'button'; b.className = 'pf-btn pf-ghost pf-small'; b.textContent = T("编辑");
         b.addEventListener('click', () => __openManageSpot(id));
         act.appendChild(b);
       } else {
@@ -821,8 +853,8 @@ function __openManageAll() {
         b.className = 'pf-visibility' + (hidden ? '' : ' on');
         b.setAttribute('role', 'switch');
         b.setAttribute('aria-checked', String(!hidden));
-        b.setAttribute('aria-label', (hidden ? '\u663e\u793a ' : '\u9690\u85cf ') + meta.name);
-        b.innerHTML = '<span aria-hidden="true"></span><b>' + (hidden ? '\u5df2\u9690\u85cf' : '\u663e\u793a\u4e2d') + '</b>';
+        b.setAttribute('aria-label', (hidden ? T("显示 ") : T("隐藏 ")) + meta.name);
+        b.innerHTML = '<span aria-hidden="true"></span><b>' + (hidden ? T("已隐藏") : T("显示中")) + '</b>';
         b.addEventListener('click', async () => {
           if (hidden) PF.hidden = PF.hidden.filter(x => x !== id);
           else PF.hidden.push(id);
@@ -844,7 +876,7 @@ function __openManageAll() {
     const tmp = next[idx]; next[idx] = next[t]; next[t] = tmp;
     PF.order = next;
     __pfSave();
-    __pfMsg(bd, '\u987a\u5e8f\u5df2\u4fdd\u5b58', true);
+    __pfMsg(bd, T("顺序已保存"), true);
     paintRows();
     renderHome();
   }
@@ -869,9 +901,9 @@ function __syncToolbar() {
   });
   const n = DATA && DATA.spots ? DATA.spots.length : 0;
   const c = document.getElementById('pf-count');
-  if (c) c.textContent = n + ' \u4e2a\u9493\u70b9';
+  if (c) c.textContent = n + T(" 个钓点");
   const ic = document.getElementById('pf-intro-count');
-  if (ic) ic.textContent = n + ' \u4e2a';
+  if (ic) ic.textContent = n + T(" 个");
 }
 function __initPublicFeatures() {
   const strip = document.querySelector('.summary-strip');
@@ -879,11 +911,11 @@ function __initPublicFeatures() {
     const bar = document.createElement('div');
     bar.className = 'pf-toolbar';
     bar.innerHTML =
-      '<div class="pf-sort" role="group" aria-label="\u9996\u9875\u9493\u70b9\u6392\u5e8f\u65b9\u5f0f">' +
-      '<button type="button" data-sort="score">\u6309\u8bc4\u5206\u6392\u5e8f</button>' +
-      '<button type="button" data-sort="custom">\u6211\u7684\u987a\u5e8f</button></div>' +
-      '<div class="pf-tools"><button type="button" id="pf-add" class="pf-btn">\uff0b \u6dfb\u52a0\u9493\u70b9</button>' +
-      '<button type="button" id="pf-manage" class="pf-btn pf-ghost">\u7ba1\u7406\u9493\u70b9</button></div>';
+      T("<div class=\"pf-sort\" role=\"group\" aria-label=\"首页钓点排序方式\">") +
+      T("<button type=\"button\" data-sort=\"score\">按评分排序</button>") +
+      T("<button type=\"button\" data-sort=\"custom\">我的顺序</button></div>") +
+      T("<div class=\"pf-tools\"><button type=\"button\" id=\"pf-add\" class=\"pf-btn\">＋ 添加钓点</button>") +
+      T("<button type=\"button\" id=\"pf-manage\" class=\"pf-btn pf-ghost\">管理钓点</button></div>");
     strip.after(bar);
     bar.querySelectorAll('.pf-sort button').forEach(b => b.addEventListener('click', () => {
       if (PF.sortMode === b.dataset.sort) return;
@@ -1005,7 +1037,7 @@ function __hideLoading(){
 }
 function __showError(msg){
   const el=document.getElementById('live-loading');
-  if(el) el.innerHTML='<div style="text-align:center;max-width:22rem"><p style="font-size:1.05rem;margin:0 0 .6rem">数据获取失败，请检查网络后重试</p><p style="opacity:.65;font-size:.85rem;margin:0 0 1rem">'+String(msg).replace(/[<>&]/g,'')+'</p><button onclick="location.reload()" style="padding:.6rem 1.6rem;border-radius:999px;border:1px solid #f2c760;background:transparent;color:inherit;font-size:1rem">重试</button></div>';
+  if(el) el.innerHTML=T("<div style=\"text-align:center;max-width:22rem\"><p style=\"font-size:1.05rem;margin:0 0 .6rem\">数据获取失败，请检查网络后重试</p><p style=\"opacity:.65;font-size:.85rem;margin:0 0 1rem\">")+String(msg).replace(/[<>&]/g,'')+T("</p><button onclick=\"location.reload()\" style=\"padding:.6rem 1.6rem;border-radius:999px;border:1px solid #f2c760;background:transparent;color:inherit;font-size:1rem\">重试</button></div>");
 }
 async function __loadData(){
   const metas=__pfMetas();
@@ -1062,26 +1094,26 @@ let DATA=__r.data;
     function windDirection(deg) {
       const angle = windAngle(deg);
       if (angle === null) return '—';
-      const labels = ['北','北东北','东北','东北东','东','东南东','东南','南东南','南','南西南','西南','西南西','西','西北西','西北','北西北'];
+      const labels = [T("北"),T("北东北"),T("东北"),T("东北东"),T("东"),T("东南东"),T("东南"),T("南东南"),T("南"),T("南西南"),T("西南"),T("西南西"),T("西"),T("西北西"),T("西北"),T("北西北")];
       return labels[Math.round(angle/22.5)%16];
     }
     function windReading(deg, speed) {
       const angle = windAngle(deg);
       const velocity = `${n(speed,0)} mph`;
-      if (angle === null) return `风向不明 · ${velocity}`;
-      return `<i class="wind-arrow" aria-hidden="true" style="--wind-angle:${angle}deg">↑</i>${windDirection(angle)}风 ${velocity}`;
+      if (angle === null) return `${T("风向不明")} ${T("·")} ${velocity}`;
+      return `<i class="wind-arrow" aria-hidden="true" style="--wind-angle:${angle}deg">↑</i>${windDirection(angle)}${T("风")} ${velocity}`;
     }
     function weatherName(code) {
-      if (code === 0) return '晴朗';
-      if ([1,2].includes(code)) return '少云';
-      if (code === 3) return '阴天';
-      if ([45,48].includes(code)) return '有雾';
-      if (code >= 51 && code <= 57) return '毛毛雨';
-      if (code >= 61 && code <= 67) return '有雨';
-      if (code >= 71 && code <= 77) return '有雪';
-      if (code >= 80 && code <= 82) return '阵雨';
-      if (code >= 95) return '雷雨';
-      return '多变';
+      if (code === 0) return T("晴朗");
+      if ([1,2].includes(code)) return T("少云");
+      if (code === 3) return T("阴天");
+      if ([45,48].includes(code)) return T("有雾");
+      if (code >= 51 && code <= 57) return T("毛毛雨");
+      if (code >= 61 && code <= 67) return T("有雨");
+      if (code >= 71 && code <= 77) return T("有雪");
+      if (code >= 80 && code <= 82) return T("阵雨");
+      if (code >= 95) return T("雷雨");
+      return T("多变");
     }
     function scoreColor(score) {
       if (score >= 78) return 'var(--green)';
@@ -1157,10 +1189,10 @@ let DATA=__r.data;
       score += rising ? 5 : 1;
       score = Math.max(20, Math.min(98, Math.round(score)));
       let advice;
-      if (Number(current.wind_speed_10m) >= 20 || wave >= 5) advice = '风浪偏大，建议改期或选择避风岸线。';
-      else if (score >= 78) advice = rising ? '风浪温和且正在涨潮，当前窗口较好。' : '整体海况不错，关注下一轮潮水变化。';
-      else if (score >= 60) advice = '条件尚可，尽量避开阵风较强的时段。';
-      else advice = '条件一般，近岸作钓也请先观察现场风浪。';
+      if (Number(current.wind_speed_10m) >= 20 || wave >= 5) advice = T("风浪偏大，建议改期或选择避风岸线。");
+      else if (score >= 78) advice = rising ? T("风浪温和且正在涨潮，当前窗口较好。") : T("整体海况不错，关注下一轮潮水变化。");
+      else if (score >= 60) advice = T("条件尚可，尽量避开阵风较强的时段。");
+      else advice = T("条件一般，近岸作钓也请先观察现场风浪。");
       return {failed:false,ti,wi,mi,currentTide,rising,nextEvent,wave,swell,sea,rain,score,advice};
     }
     function bestWindow(spot, dateStr, speciesName) {
@@ -1249,13 +1281,13 @@ let DATA=__r.data;
       return r;
     }
     const FISH_SPECIES = [
-      {name:'黑鱼',english:'Tautog',months:[4,5,10,11],temp:[50,62],note:'秋季正季，礁石区用蟹做饵，只白天开口'},
-      {name:'条纹鲈',english:'Striped Bass',months:[4,5,6,9,10,11],temp:[55,68],note:'春秋洄游季'},
-      {name:'蓝鱼',english:'Bluefish',months:[5,6,7,8,9,10,11],temp:[60,75],note:'凶猛，群游'},
-      {name:'黑海鲈',english:'Black Sea Bass',months:[5,6,7,8,9,10,11,12],temp:[58,70],note:'礁石沉船区'},
-      {name:'美洲鲷',english:'Scup / Porgy',months:[6,7,8,9,10],temp:[60,70],note:'数量多，好钓'},
-      {name:'夏季比目鱼',english:'Fluke',months:[5,6,7,8,9],temp:[60,72],note:'沙底拖钓'},
-      {name:'弱鱼',english:'Weakfish',months:[5,6,7,8,9],temp:[62,72],note:'晨昏窗口'}
+      {name:'黑鱼',english:'Tautog',months:[4,5,10,11],temp:[50,62],note:T("秋季正季，礁石区用蟹做饵，只白天开口")},
+      {name:'条纹鲈',english:'Striped Bass',months:[4,5,6,9,10,11],temp:[55,68],note:T("春秋洄游季")},
+      {name:'蓝鱼',english:'Bluefish',months:[5,6,7,8,9,10,11],temp:[60,75],note:T("凶猛，群游")},
+      {name:'黑海鲈',english:'Black Sea Bass',months:[5,6,7,8,9,10,11,12],temp:[58,70],note:T("礁石沉船区")},
+      {name:'美洲鲷',english:'Scup / Porgy',months:[6,7,8,9,10],temp:[60,70],note:T("数量多，好钓")},
+      {name:'夏季比目鱼',english:'Fluke',months:[5,6,7,8,9],temp:[60,72],note:T("沙底拖钓")},
+      {name:'弱鱼',english:'Weakfish',months:[5,6,7,8,9],temp:[62,72],note:T("晨昏窗口")}
     ];
     const SPECIES_PROFILE = {
       '黑鱼': {temp:[50,62], tide:'rising', light:'day'},
@@ -1268,31 +1300,31 @@ let DATA=__r.data;
     };
     const FISH_REGULATIONS = {
       NY: {
-        '黑鱼': {size:'≥16英寸', seasons:[{start:'04-01',end:'04-30',bag:'2条',label:'4/1–4/30'},{start:'10-15',end:'12-22',bag:'4条',label:'NY Bight 10/15–12/22'}], alternate:[{start:'10-11',end:'12-09',bag:'3条',label:'长岛湾10/11–12/9'}], closedSummary:'开放期：4/1–4/30 日限2条；长岛湾10/11–12/9 日限3条；NY Bight 10/15–12/22 日限4条'},
-        '条纹鲈': {size:'28–31英寸 slot', seasons:[{start:'04-15',end:'12-15',bag:'1条',label:'4/15–12/15'}]},
-        '蓝鱼': {size:'无尺寸限制', yearRound:true, bag:'5条（私人）/7条（包船）'},
-        '黑海鲈': {size:'≥16英寸', seasons:[{start:'05-16',end:'08-31',bag:'3条',label:'5/16–8/31'},{start:'09-01',end:'12-31',bag:'6条',label:'9/1–12/31'}]},
-        '美洲鲷': {size:'岸钓≥9.5英寸；船钓9–10月≥11英寸', yearRound:true, bag:'30条'},
-        '夏季比目鱼': {seasons:[{start:'05-04',end:'08-01',size:'≥19英寸',bag:'4条',label:'5/4–8/1'},{start:'08-02',end:'10-15',size:'≥19.5英寸',bag:'3条',label:'8/2–10/15'}]},
-        '弱鱼': {size:'≥16英寸', yearRound:true, bag:'1条'}
+        '黑鱼': {size:T("≥16英寸"), seasons:[{start:'04-01',end:'04-30',bag:T("2条"),label:'4/1–4/30'},{start:'10-15',end:'12-22',bag:T("4条"),label:'NY Bight 10/15–12/22'}], alternate:[{start:'10-11',end:'12-09',bag:T("3条"),label:T("长岛湾10/11–12/9")}], closedSummary:T("开放期：4/1–4/30 日限2条；长岛湾10/11–12/9 日限3条；NY Bight 10/15–12/22 日限4条")},
+        '条纹鲈': {size:T("28–31英寸 slot"), seasons:[{start:'04-15',end:'12-15',bag:T("1条"),label:'4/15–12/15'}]},
+        '蓝鱼': {size:T("无尺寸限制"), yearRound:true, bag:T("5条（私人）/7条（包船）")},
+        '黑海鲈': {size:T("≥16英寸"), seasons:[{start:'05-16',end:'08-31',bag:T("3条"),label:'5/16–8/31'},{start:'09-01',end:'12-31',bag:T("6条"),label:'9/1–12/31'}]},
+        '美洲鲷': {size:T("岸钓≥9.5英寸；船钓9–10月≥11英寸"), yearRound:true, bag:T("30条")},
+        '夏季比目鱼': {seasons:[{start:'05-04',end:'08-01',size:T("≥19英寸"),bag:T("4条"),label:'5/4–8/1'},{start:'08-02',end:'10-15',size:T("≥19.5英寸"),bag:T("3条"),label:'8/2–10/15'}]},
+        '弱鱼': {size:T("≥16英寸"), yearRound:true, bag:T("1条")}
       },
       NJ: {
-        '黑鱼': {size:'≥15英寸', seasons:[{start:'01-01',end:'02-28',bag:'4条',label:'1/1–2/28'},{start:'04-01',end:'04-30',bag:'4条',label:'4/1–4/30'},{start:'08-01',end:'11-15',bag:'1条',label:'8/1–11/15'},{start:'11-16',end:'12-31',bag:'5条',label:'11/16–12/31'}]},
-        '条纹鲈': {size:'28–31英寸 slot', seasons:[{start:'03-01',end:'12-31',bag:'1条',label:'近海3/1–12/31'}]},
-        '蓝鱼': {size:'无尺寸限制', yearRound:true, bag:'5条（私人）/7条（包船）'},
-        '黑海鲈': {size:'≥12.5英寸', seasons:[{start:'05-15',end:'06-21',bag:'10条',label:'5/15–6/21'},{start:'06-22',end:'09-22',bag:'1条',label:'6/22–9/22'},{start:'09-23',end:'10-31',bag:'10条',label:'9/23–10/31'},{start:'11-01',end:'12-31',bag:'15条',label:'11/1–12/31'}]},
-        '美洲鲷': {size:'≥10英寸', yearRound:true, bag:'30条'},
-        '夏季比目鱼': {size:'≥18英寸', seasons:[{start:'05-04',end:'09-25',bag:'3条',label:'5/4–9/25，其它水域'}]},
-        '弱鱼': {size:'≥13英寸', yearRound:true, bag:'1条'}
+        '黑鱼': {size:T("≥15英寸"), seasons:[{start:'01-01',end:'02-28',bag:T("4条"),label:'1/1–2/28'},{start:'04-01',end:'04-30',bag:T("4条"),label:'4/1–4/30'},{start:'08-01',end:'11-15',bag:T("1条"),label:'8/1–11/15'},{start:'11-16',end:'12-31',bag:T("5条"),label:'11/16–12/31'}]},
+        '条纹鲈': {size:T("28–31英寸 slot"), seasons:[{start:'03-01',end:'12-31',bag:T("1条"),label:T("近海3/1–12/31")}]},
+        '蓝鱼': {size:T("无尺寸限制"), yearRound:true, bag:T("5条（私人）/7条（包船）")},
+        '黑海鲈': {size:T("≥12.5英寸"), seasons:[{start:'05-15',end:'06-21',bag:T("10条"),label:'5/15–6/21'},{start:'06-22',end:'09-22',bag:T("1条"),label:'6/22–9/22'},{start:'09-23',end:'10-31',bag:T("10条"),label:'9/23–10/31'},{start:'11-01',end:'12-31',bag:T("15条"),label:'11/1–12/31'}]},
+        '美洲鲷': {size:T("≥10英寸"), yearRound:true, bag:T("30条")},
+        '夏季比目鱼': {size:T("≥18英寸"), seasons:[{start:'05-04',end:'09-25',bag:T("3条"),label:T("5/4–9/25，其它水域")}]},
+        '弱鱼': {size:T("≥13英寸"), yearRound:true, bag:T("1条")}
       },
       RI: {
-        '黑鱼': {size:'≥16英寸', seasons:[{start:'04-01',end:'05-31',bag:'3条',label:'4/1–5/31'},{start:'08-01',end:'10-14',bag:'3条',label:'8/1–10/14'},{start:'10-15',end:'12-31',bag:'5条',label:'10/15–12/31'}], detail:'每船最多10条（包船除外）；≥21英寸奖杯鱼限1条', closedSummary:'开放期：4/1–5/31 日限3条；8/1–10/14 日限3条；10/15–12/31 日限5条。休渔期：1/1–3/31、6/1–7/31。每船最多10条（包船除外）；≥21英寸奖杯鱼限1条'},
-        '条纹鲈': {size:'28–31英寸 slot', yearRound:true, bag:'1条'},
-        '蓝鱼': {size:'无尺寸限制', yearRound:true, bag:'5条（私人/岸钓）/7条（包船）'},
-        '黑海鲈': {size:'≥14英寸', seasons:[{start:'07-02',end:'08-31',bag:'1条',label:'7/2–8/31'},{start:'09-01',end:'12-31',bag:'7条',label:'9/1–12/31'}]},
-        '美洲鲷': {size:'私人船钓≥10.5英寸；岸钓≥9.5英寸', seasons:[{start:'05-01',end:'12-31',bag:'30条',label:'5/1–12/31'}], detail:'包船 9/1–10/31：≥10.5英寸，日限40条'},
-        '夏季比目鱼': {size:'≥19英寸', seasons:[{start:'04-01',end:'12-31',bag:'6条',label:'4/1–12/31'}]},
-        '弱鱼': {size:'≥16英寸', yearRound:true, bag:'1条'}
+        '黑鱼': {size:T("≥16英寸"), seasons:[{start:'04-01',end:'05-31',bag:T("3条"),label:'4/1–5/31'},{start:'08-01',end:'10-14',bag:T("3条"),label:'8/1–10/14'},{start:'10-15',end:'12-31',bag:T("5条"),label:'10/15–12/31'}], detail:T("每船最多10条（包船除外）；≥21英寸奖杯鱼限1条"), closedSummary:T("开放期：4/1–5/31 日限3条；8/1–10/14 日限3条；10/15–12/31 日限5条。休渔期：1/1–3/31、6/1–7/31。每船最多10条（包船除外）；≥21英寸奖杯鱼限1条")},
+        '条纹鲈': {size:T("28–31英寸 slot"), yearRound:true, bag:T("1条")},
+        '蓝鱼': {size:T("无尺寸限制"), yearRound:true, bag:T("5条（私人/岸钓）/7条（包船）")},
+        '黑海鲈': {size:T("≥14英寸"), seasons:[{start:'07-02',end:'08-31',bag:T("1条"),label:'7/2–8/31'},{start:'09-01',end:'12-31',bag:T("7条"),label:'9/1–12/31'}]},
+        '美洲鲷': {size:T("私人船钓≥10.5英寸；岸钓≥9.5英寸"), seasons:[{start:'05-01',end:'12-31',bag:T("30条"),label:'5/1–12/31'}], detail:T("包船 9/1–10/31：≥10.5英寸，日限40条")},
+        '夏季比目鱼': {size:T("≥19英寸"), seasons:[{start:'04-01',end:'12-31',bag:T("6条"),label:'4/1–12/31'}]},
+        '弱鱼': {size:T("≥16英寸"), yearRound:true, bag:T("1条")}
       }
     };
     function seaTemperatureForDate(spot,date) {
@@ -1337,76 +1369,76 @@ let DATA=__r.data;
     function regulationFor(spot,fish,date) {
       const state = spotState(spot);
       const rule = FISH_REGULATIONS[state][fish.name];
-      if (!rule || rule.officialOnly) return {kind:'unknown',text:'详见官网'};
-      if (rule.yearRound) return {kind:'open',text:`合法 ${rule.size} · 日限${rule.bag}`,detail:rule.detail};
+      if (!rule || rule.officialOnly) return {kind:'unknown',text:T("详见官网")};
+      if (rule.yearRound) return {kind:'open',text:`${T("合法")} ${rule.size} ${T("·")} ${T("日限")}${rule.bag}`,detail:rule.detail};
       const season = rule.seasons.find(item => dateInSeason(date,item.start,item.end));
-      if (season) return {kind:'open',text:`合法 ${season.size || rule.size} · 日限${season.bag}（${season.label}）`,detail:rule.detail};
-      const closedDetail = rule.closedSummary || `合法 ${rule.size || rule.seasons.map(item => item.size).filter(Boolean).join('/')} · ${rule.seasons.map(item => `${item.label} 日限${item.bag}`).join('；')}`;
-      return {kind:'closed',text:'休渔期',detail:closedDetail};
+      if (season) return {kind:'open',text:`${T("合法")} ${season.size || rule.size} ${T("·")} ${T("日限")}${season.bag}${T("（")}${season.label}${T("）")}`,detail:rule.detail};
+      const closedDetail = rule.closedSummary || `${T("合法")} ${rule.size || rule.seasons.map(item => item.size).filter(Boolean).join('/')} ${T("·")} ${rule.seasons.map(item => `$${T("日限")}tem.label} 日限${item.bag}`).join('；')}`;
+      return {kind:'closed',text:T("休渔期"),detail:closedDetail};
     }
     function makeFishList(spot,date) {
       return seasonalFish(spot,date).map((fish,index) => {
         const reg = regulationFor(spot,fish,date);
         const regulation = reg.kind === 'closed'
-          ? `<span class="fish-reg closed">休渔期</span><span class="fish-reg-detail">${esc(reg.detail)}</span>`
+          ? `<span class="fish-reg closed">${T("休渔期")}</span><span class="fish-reg-detail">${esc(reg.detail)}</span>`
           : `<span class="fish-reg ${reg.kind === 'unknown' ? 'unknown' : ''}">${esc(reg.text)}</span>${reg.detail ? `<span class="fish-reg-detail">${esc(reg.detail)}</span>` : ''}`;
         return `<div class="fish-row">
           <span class="fish-rank">${index+1}</span>
-          <div class="fish-name"><b>${esc(fish.name)}</b><small>${esc(fish.english)}</small></div>
-          <div class="fish-info">${regulation}<span class="fish-note">${esc(fish.note)}</span>${(() => { const fbw = bestWindow(spot, date, fish.name); return fbw ? `<span class="fish-window">最佳 ${fbw.label}${fbw.secondLabel ? ' · 次佳 ' + fbw.secondLabel : ''}</span>` : ''; })()}</div>
+          <div class="fish-name"><b>${esc(fishName(fish))}</b><small>${esc(LANG==='en'?fish.name:fish.english)}</small></div>
+          <div class="fish-info">${regulation}<span class="fish-note">${esc(fish.note)}</span>${(() => { const fbw = bestWindow(spot, date, fish.name); return fbw ? `<span class="fish-window">${T("最佳")} ${fbw.label}${fbw.secondLabel ? ' · 次佳 ' + fbw.secondLabel : ''}</span>` : ''; })()}</div>
         </div>`;
       }).join('');
     }
     function regulationSources() {
-      return `2026年 NY/NJ/RI 休闲海钓法规，法规每年可能调整，出钓前请核对官方：<a href="https://dec.ny.gov/sites/default/files/2026-07/recswfishinglimits_simplifiedchinese.pdf" target="_blank" rel="noopener noreferrer">NY</a> · <a href="https://dep.nj.gov/njfw/wp-content/uploads/njfw/attention-anglers-2026.pdf" target="_blank" rel="noopener noreferrer">NJ</a> · <a href="https://dem.ri.gov/office-divisions/natural-resources-bureau/natural-resources-divisions/marine-fisheries-1" target="_blank" rel="noopener noreferrer">Rhode Island DEM 官网</a>`;
+      return `2026${T("年")} NY/NJ/RI ${T("休闲海钓法规，法规每年可能调整，出钓前请核对官方：")}<a href="https://dec.ny.gov/sites/default/files/2026-07/recswfishinglimits_simplifiedchinese.pdf" target="_blank" rel="noopener noreferrer">NY</a> ${T("·")} <a href="https://dep.nj.gov/njfw/wp-content/uploads/njfw/attention-anglers-2026.pdf" target="_blank" rel="noopener noreferrer">NJ</a> ${T("·")} <a href="https://dem.ri.gov/office-divisions/natural-resources-bureau/natural-resources-divisions/marine-fisheries-1" target="_blank" rel="noopener noreferrer">Rhode Island DEM ${T("官网")}</a>`;
     }
     function stamp() {
       const iso = DATA.asOf;
-      return `${Number(iso.slice(5,7))}月${Number(iso.slice(8,10))}日 ${iso.slice(11,16)}（美东）`;
+      return `${Number(iso.slice(5,7))}${T("月")}${Number(iso.slice(8,10))}${T("日")} ${iso.slice(11,16)}${T("（美东）")}`;
     }
     function scoreLabel(score) {
-      if (score >= 78) return '很好';
-      if (score >= 60) return '尚可';
-      if (score >= 45) return '一般';
-      return '偏弱';
+      if (score >= 78) return T("很好");
+      if (score >= 60) return T("尚可");
+      if (score >= 45) return T("一般");
+      return T("偏弱");
     }
     function renderHome() {
-      document.getElementById('freshness').textContent = `更新于 ${stamp()}`;
+      document.getElementById('freshness').textContent = `${T("更新于")} ${stamp()}`;
       __syncToolbar();
-      document.getElementById('updated-footer').textContent = `数据更新时间：${stamp()}。所有时间均为美国东部时间，潮位基准为 MLLW，单位为英尺。`;
+      document.getElementById('updated-footer').textContent = `${T("数据更新时间：")}${stamp()}${T("。所有时间均为美国东部时间，潮位基准为")} MLLW${T("，单位为英尺。")}`;
       const ranked = DATA.spots.map((spot,index) => ({spot,index,d:derive(spot)})).sort((a,b) => {
         if (PF.sortMode === 'custom') return __pfPos(a.spot) - __pfPos(b.spot);
         return b.d.score - a.d.score;
       });
       if (!ranked.length) {
-        document.getElementById('spot-grid').innerHTML = '<div class="pf-empty"><strong>首页暂时没有显示的钓点</strong><span>到“管理钓点”重新显示预设地点，或添加一个自己的钓点。</span><button type="button" class="pf-btn" id="pf-empty-manage">管理钓点</button></div>';
+        document.getElementById('spot-grid').innerHTML = T("<div class=\"pf-empty\"><strong>首页暂时没有显示的钓点</strong><span>到“管理钓点”重新显示预设地点，或添加一个自己的钓点。</span><button type=\"button\" class=\"pf-btn\" id=\"pf-empty-manage\">管理钓点</button></div>");
         document.getElementById('pf-empty-manage').addEventListener('click', __openManageAll);
         return;
       }
       document.getElementById('spot-grid').innerHTML = ranked.map((entry,rank) => {
         const {spot,index,d} = entry;
-        if (d.failed) return `<article class="error"><strong>${esc(spot.name)}</strong><p>数据更新失败</p></article>`;
+        if (d.failed) return `<article class="error"><strong>${esc(spot.name)}</strong><p>${T("数据更新失败")}</p></article>`;
         const c = spot.weather.current;
         const currentFish = seasonalFish(spot,spot.weather.daily.time[0])[0];
         const bwToday = bestWindow(spot,spot.weather.daily.time[0]);
-        return `<div class="spot-card" role="button" tabindex="0" data-index="${index}" aria-label="查看 ${esc(spot.name)} 详情">
+        return `<div class="spot-card" role="button" tabindex="0" data-index="${index}" aria-label="${T("查看")} ${esc(spot.name)} ${T("详情")}">
           <div class="card-top">
-            <div><span class="rank">#${rank+1} · ${scoreLabel(d.score)}</span><h3>${esc(spot.name)}</h3><span class="station">NOAA 站 ${esc(spot.station)}</span></div>
-            <div class="score" style="--score-color:${scoreColor(d.score)}"><div><strong>${d.score}</strong><small>评分</small></div></div>
+            <div><span class="rank">#${rank+1} ${T("·")} ${scoreLabel(d.score)}</span><h3>${esc(spot.name)}</h3><span class="station">NOAA ${T("站")} ${esc(spot.station)}</span></div>
+            <div class="score" style="--score-color:${scoreColor(d.score)}"><div><strong>${d.score}</strong><small>${T("评分")}</small></div></div>
           </div>
           <div class="card-primary">
-            <div class="tide-now">${d.rising ? '正在涨潮' : '正在落潮'}<strong>${n(d.currentTide)} ft</strong></div>
-            <div class="next-tide">下次${d.nextEvent.type === 'H' ? '高潮' : '低潮'}<b>${dateTime(d.nextEvent.t)}</b>${n(d.nextEvent.v)} ft</div>
+            <div class="tide-now">${d.rising ? T("正在涨潮") : T("正在落潮")}<strong>${n(d.currentTide)} ft</strong></div>
+            <div class="next-tide">${T("下次")}${d.nextEvent.type === 'H' ? T("高潮") : T("低潮")}<b>${dateTime(d.nextEvent.t)}</b>${n(d.nextEvent.v)} ft</div>
           </div>
           <div class="metric-row">
-            <div class="metric"><span>风向 / 风速</span><b class="wind-reading">${windReading(c.wind_direction_10m,c.wind_speed_10m)}</b></div>
-            <div class="metric"><span>浪高</span><b>${n(d.wave)} ft</b></div>
-            <div class="metric"><span>海温</span><b>${n(d.sea,0)}°F</b></div>
+            <div class="metric"><span>${T("风向")} / ${T("风速")}</span><b class="wind-reading">${windReading(c.wind_direction_10m,c.wind_speed_10m)}</b></div>
+            <div class="metric"><span>${T("浪高")}</span><b>${n(d.wave)} ft</b></div>
+            <div class="metric"><span>${T("海温")}</span><b>${n(d.sea,0)}°F</b></div>
           </div>
-          <p class="season-line">时令：<strong>${esc(currentFish.name)}</strong></p>
-          <p class="best-window">今日最佳窗口 <b>${bwToday ? bwToday.label : '暂无'}</b>${bwToday && bwToday.secondLabel ? ` · 次佳 <b>${bwToday.secondLabel}</b>` : ''}</p>
-          <p class="recommend">${esc(d.advice)} <span>仅供参考</span></p>
-          ${spot.isCustom?`<button type="button" class="pf-card-manage" data-pf-manage="${esc(spot.pid)}">管理</button>`:''}
+          <p class="season-line">${T("时令：")}<strong>${esc(fishName(currentFish))}</strong></p>
+          <p class="best-window">${T("今日最佳窗口")} <b>${bwToday ? bwToday.label : T("暂无")}</b>${bwToday && bwToday.secondLabel ? ` ${T("·")} ${T("次佳")} <b>${bwToday.secondLabel}</b>` : ''}</p>
+          <p class="recommend">${esc(d.advice)} <span>${T("仅供参考")}</span></p>
+          ${spot.isCustom?`<b${T("管理")}ton type="button" class="pf-card-manage" data-pf-manage="${esc(spot.pid)}">管理</button>`:''}
         </div>`;
       }).join('');
       document.querySelectorAll('.spot-card').forEach(card => {
@@ -1423,14 +1455,14 @@ let DATA=__r.data;
       const days = (date - known) / 86400000;
       const phase = ((days % 29.53058867) + 29.53058867) % 29.53058867;
       const fraction = phase / 29.53058867;
-      if (fraction < .03 || fraction >= .97) return '新月';
-      if (fraction < .22) return '娥眉月';
-      if (fraction < .28) return '上弦月';
-      if (fraction < .47) return '盈凸月';
-      if (fraction < .53) return '满月';
-      if (fraction < .72) return '亏凸月';
-      if (fraction < .78) return '下弦月';
-      return '残月';
+      if (fraction < .03 || fraction >= .97) return T("新月");
+      if (fraction < .22) return T("娥眉月");
+      if (fraction < .28) return T("上弦月");
+      if (fraction < .47) return T("盈凸月");
+      if (fraction < .53) return T("满月");
+      if (fraction < .72) return T("亏凸月");
+      if (fraction < .78) return T("下弦月");
+      return T("残月");
     }
     function solunar(dateString) {
       const date = new Date(`${dateString}T12:00:00-04:00`);
@@ -1444,17 +1476,17 @@ let DATA=__r.data;
         majorSpans:[mk(transit,1), mk(transit + 12.42,1)], minorSpans:[mk(transit - 6.21,.5), mk(transit + 6.21,.5)]};
     }
     function weekday(date) {
-      const names = ['周日','周一','周二','周三','周四','周五','周六'];
+      const names = [T("周日"),T("周一"),T("周二"),T("周三"),T("周四"),T("周五"),T("周六")];
       return names[new Date(`${date}T12:00:00-04:00`).getUTCDay()];
     }
     function dayLabel(date, index) {
-      if (index === 0) return '今天';
-      if (index === 1) return '明天';
+      if (index === 0) return T("今天");
+      if (index === 1) return T("明天");
       return weekday(date);
     }
     function makeDateStrip(spot, selectedIndex) {
       return spot.weather.daily.time.slice(0,7).map((date,index) => `<button class="date-chip" type="button" data-day-index="${index}" aria-pressed="${index === selectedIndex}">
-        <b>${dayLabel(date,index)}</b><small>${Number(date.slice(5,7))}月${Number(date.slice(8,10))}日</small>
+        <b>${dayLabel(date,index)}</b><small>${Number(date.slice(5,7))}${T("月")}${Number(date.slice(8,10))}${T("日")}</small>
       </button>`).join('');
     }
     function tideEventsForDate(spot, date) {
@@ -1462,9 +1494,9 @@ let DATA=__r.data;
     }
     function makeTideEvents(spot, date) {
       const events = tideEventsForDate(spot,date);
-      if (!events.length) return '<p class="tide-empty">这一天暂无高低潮数据。</p>';
+      if (!events.length) return T("<p class=\"tide-empty\">这一天暂无高低潮数据。</p>");
       return events.map(x => `<div class="tide-event ${x.type === 'H' ? 'high' : ''}">
-        <div><b>${x.type === 'H' ? '高潮' : '低潮'}</b><small>${Number(x.t.slice(5,7))}月${Number(x.t.slice(8,10))}日</small></div>
+        <div><b>${x.type === 'H' ? T("高潮") : T("低潮")}</b><small>${Number(x.t.slice(5,7))}${T("月")}${Number(x.t.slice(8,10))}${T("日")}</small></div>
         <div><time>${timeOnly(x.t)}</time><small>${n(x.v)} ft</small></div>
       </div>`).join('');
     }
@@ -1487,12 +1519,12 @@ let DATA=__r.data;
       score -= Math.max(0,wave-1.5)*10;
       score -= rain*.09;
       score = Math.max(20,Math.min(98,Math.round(score)));
-      const label = index === 0 ? '今天' : `${Number(date.slice(5,7))}月${Number(date.slice(8,10))}日`;
+      const label = index === 0 ? T("今天") : `${Number(date.slice(5,7))}${T("月")}${Number(date.slice(8,10))}${T("日")}`;
       let advice;
-      if (wind >= 20 || wave >= 5) advice = `${label}风浪偏大，建议改期或选择避风岸线。`;
-      else if (score >= 78) advice = `${label}风浪温和，适合关注高潮前后的窗口。`;
-      else if (score >= 60) advice = `${label}条件尚可，尽量避开阵风较强的时段。`;
-      else advice = `${label}条件一般，近岸作钓也请先观察现场风浪。`;
+      if (wind >= 20 || wave >= 5) advice = `${label}${T("风浪偏大，建议改期或选择避风岸线。")}`;
+      else if (score >= 78) advice = `${label}${T("风浪温和，适合关注高潮前后的窗口。")}`;
+      else if (score >= 60) advice = `${label}${T("条件尚可，尽量避开阵风较强的时段。")}`;
+      else advice = `${label}${T("条件一般，近岸作钓也请先观察现场风浪。")}`;
       return {score,advice};
     }
     function makeHours(spot,d) {
@@ -1503,24 +1535,25 @@ let DATA=__r.data;
         const i = start+j;
         const mi = nearestIndex(m.time,t);
         return `<div class="hour">
-          <time>${j===0?'现在':timeOnly(t)}</time>
+          <time>${j===0?T("现在"):timeOnly(t)}</time>
           <span class="hour-temp">${n(h.temperature_2m[i],0)}°</span>
-          <small>${weatherName(h.weather_code[i])} · 降水 ${n(h.precipitation_probability[i],0)}%</small>
+          <small>${weatherName(h.weather_code[i])} ${T("·")} ${T("降水")} ${n(h.precipitation_probability[i],0)}%</small>
           <small>${windReading(h.wind_direction_10m[i],h.wind_speed_10m[i])}</small>
-          <small>浪 ${n(m.wave_height[mi])} · 涌 ${n(m.swell_wave_height[mi])} ft</small>
-          <small>海温 ${n(m.sea_surface_temperature[mi],0)}°F</small>
+          <small>${T("浪")} ${n(m.wave_height[mi])} ${T("·")} ${T("涌")} ${n(m.swell_wave_height[mi])} ft</small>
+          <small>${T("海温")} ${n(m.sea_surface_temperature[mi],0)}°F</small>
         </div>`;
       }).join('');
     }
     function makeForecast(spot) {
       const d = spot.weather.daily;
       return d.time.map((date,i) => `<div class="day">
-        <div class="day-name">${i===0?'今天':weekday(date)}</div>
-        <div class="day-main"><b>${weatherName(d.weather_code[i])}</b><small>降水 ${n(d.precipitation_probability_max[i],0)}% · ${windReading(d.wind_direction_10m_dominant?.[i],d.wind_speed_10m_max[i])}</small></div>
+        <div class="day-name">${i===0?T("今天"):weekday(date)}</div>
+        <div class="day-main"><b>${weatherName(d.weather_code[i])}</b><small>${T("降水")} ${n(d.precipitation_probability_max[i],0)}% ${T("·")} ${windReading(d.wind_direction_10m_dominant?.[i],d.wind_speed_10m_max[i])}</small></div>
         <div class="day-temp"><b>${n(d.temperature_2m_max[i],0)}°</b><small>${n(d.temperature_2m_min[i],0)}°F</small></div>
       </div>`).join('');
     }
     function showDetail(index, selectedIndex=0, shouldScroll=true) {
+      __curDetail = index; __curDateIdx = selectedIndex;
       const spot = DATA.spots[index];
       const d = derive(spot);
       if (d.failed) return;
@@ -1537,38 +1570,38 @@ let DATA=__r.data;
       const pHist = spot.weather.hourly.pressure_msl || [];
       const pRef = Number(pHist[Math.max(0,d.wi - 3)]);
       const pDelta = (Number.isFinite(pNow) && Number.isFinite(pRef)) ? pNow - pRef : NaN;
-      const pTrend = !Number.isFinite(pDelta) ? '' : pDelta > .7 ? '↑ 上升' : pDelta < -.7 ? '↓ 下降' : '→ 平稳';
+      const pTrend = !Number.isFinite(pDelta) ? '' : pDelta > .7 ? T("↑ 上升") : pDelta < -.7 ? T("↓ 下降") : T("→ 平稳");
       const pLine = Number.isFinite(pNow)
-        ? `<div class="now-stat"><span>气压</span><b>${Math.round(pNow)} hPa</b>${pTrend ? `<small class="gust-line">近3小时 ${pTrend}</small>` : ''}</div>`
+        ? `<div class="now-stat"><span>${T("气压")}</span><b>${Math.round(pNow)} hPa</b>${pTrend ? `<small class="gust-line">${T("近")}3${T("小时")} ${pTrend}</small>` : ''}</div>`
         : '';
       const highs = events.filter(x => x.type === 'H').length;
       const lows = events.filter(x => x.type === 'L').length;
       const tideStatus = selectedIndex === 0
-        ? `<div class="now-stat"><span>${d.rising?'涨潮中':'落潮中'}</span><b>${n(d.currentTide)} ft</b></div>`
-        : `<div class="now-stat"><span>当天高低潮</span><b>${highs} 高 · ${lows} 低</b></div>`;
+        ? `<div class="now-stat"><span>${d.rising?T("涨潮中"):T("落潮中")}</span><b>${n(d.currentTide)} ft</b></div>`
+        : `<div class="now-stat"><span>${T("当天高低潮")}</span><b>${highs} ${T("高")} ${T("·")} ${lows} ${T("低")}</b></div>`;
       const curveNote = spot.tide.curveSource === 'hilo-cosine'
-        ? '曲线按 NOAA 真实高低潮时间与潮高插值；潮位单位 ft，基准 MLLW'
-        : '选择日期查看当天潮汐；潮位单位 ft，基准 MLLW';
+        ? T("曲线按 NOAA 真实高低潮时间与潮高插值；潮位单位 ft，基准 MLLW")
+        : T("选择日期查看当天潮汐；潮位单位 ft，基准 MLLW");
       document.getElementById('detail-content').innerHTML = `<article class="detail-hero">
-        <div class="detail-title"><div><h1>${esc(spot.name)}</h1><p>NOAA 站 ${esc(spot.station)} · ${weatherName(c.weather_code)}</p></div><div class="detail-score">${d.score}<small>当前评分 · ${scoreLabel(d.score)}</small></div></div>
+        <div class="detail-title"><div><h1>${esc(spot.name)}</h1><p>NOAA ${T("站")} ${esc(spot.station)} ${T("·")} ${weatherName(c.weather_code)}</p></div><div class="detail-score">${d.score}<small>${T("当前评分")} ${T("·")} ${scoreLabel(d.score)}</small></div></div>
         <div class="now-grid">
           ${tideStatus}
-          <div class="now-stat"><span>风向 / 风速</span><b>${windReading(c.wind_direction_10m,c.wind_speed_10m)}</b><small class="gust-line">阵风 ${n(c.wind_gusts_10m,0)} mph</small></div>
-          <div class="now-stat"><span>浪 / 涌浪</span><b>${n(d.wave)} / ${n(d.swell)} ft</b></div>
-          <div class="now-stat"><span>海水温度</span><b>${n(d.sea,0)}°F</b></div>
+          <div class="now-stat"><span>${T("风向")} / ${T("风速")}</span><b>${windReading(c.wind_direction_10m,c.wind_speed_10m)}</b><small class="gust-line">${T("阵风")} ${n(c.wind_gusts_10m,0)} mph</small></div>
+          <div class="now-stat"><span>${T("浪")} / ${T("涌浪")}</span><b>${n(d.wave)} / ${n(d.swell)} ft</b></div>
+          <div class="now-stat"><span>${T("海水温度")}</span><b>${n(d.sea,0)}°F</b></div>
           ${pLine}
         </div>
-        <p class="advice" id="day-advice">${esc(selectedAdvice.advice)} <small>出钓建议仅供参考。</small></p>
+        <p class="advice" id="day-advice">${esc(selectedAdvice.advice)} <small>${T("出钓建议仅供参考。")}</small></p>
       </article>
       <div class="detail-layout">
-        <section class="panel chart-panel"><h2>${Number(selectedDate.slice(5,7))}月${Number(selectedDate.slice(8,10))}日潮汐</h2><p class="panel-sub">${curveNote}</p><div class="date-strip" aria-label="选择潮汐日期">${makeDateStrip(spot,selectedIndex)}</div><div class="chart-wrap"><canvas id="tide-chart" role="img" aria-label="${esc(spot.name)} ${esc(selectedDate)} 潮汐曲线"></canvas></div><div class="legend"><span><i></i>潮位曲线</span><span><i class="gold"></i>高潮 / 低潮</span></div></section>
-        <section class="panel"><h2>当天高低潮</h2><p class="panel-sub">${weekday(selectedDate)} · 美国东部时间</p><div class="tide-table">${makeTideEvents(spot,selectedDate)}</div><p class="best-window">最佳出钓窗口 <b>${bwSel ? bwSel.label : '暂无'}</b>${bwSel && bwSel.secondLabel ? ` · 次佳 <b>${bwSel.secondLabel}</b>` : ''} <span style="color:var(--muted)">· 潮汐·风浪·气压·鱼口综合</span></p></section>
-        <section class="panel"><h2>今天的光照与月相</h2><p class="panel-sub">适合安排清晨和傍晚窗口</p><div class="sun-moon"><div><span>日出</span><b>${timeOnly(daily.sunrise[0])}</b></div><div><span>日落</span><b>${timeOnly(daily.sunset[0])}</b></div><div><span>月相</span><b>${moonPhase(daily.time[0])}</b></div></div></section>
-        <section class="panel"><h2>鱼口活跃时段</h2><p class="panel-sub">${Number(selectedDate.slice(5,7))}月${Number(selectedDate.slice(8,10))}日 · ${moonPhase(selectedDate)} · 天文估算，仅供参考</p><div class="sun-moon"><div><span>大咬口</span><b>${sol.major[0]}</b></div><div><span>大咬口</span><b>${sol.major[1]}</b></div><div><span>小咬口</span><b>${sol.minor[0]}</b></div><div><span>小咬口</span><b>${sol.minor[1]}</b></div></div></section>
-        <section class="panel season-panel"><h2>时令鱼种参考</h2><p class="panel-sub">${Number(selectedDate.slice(5,7))}月${Number(selectedDate.slice(8,10))}日 · ${spotState(spot)} 法规 · 当天平均海温 ${Number.isFinite(selectedSea) ? `${n(selectedSea,0)}°F` : '暂无'}</p><div class="fish-list">${makeFishList(spot,selectedDate)}</div><p class="fish-footnote">根据季节与水温推测，仅供参考。${regulationSources()}</p></section>
+        <section class="panel chart-panel"><h2>${Number(selectedDate.slice(5,7))}${T("月")}${Number(selectedDate.slice(8,10))}${T("日潮汐")}</h2><p class="panel-sub">${curveNote}</p><div class="date-strip" aria-label="${T("选择潮汐日期")}">${makeDateStrip(spot,selectedIndex)}</div><div class="chart-wrap"><canvas id="tide-chart" role="img" aria-label="${esc(spot.name)} ${esc(selectedDate)} ${T("潮汐曲线")}"></canvas></div><div class="legend"><span><i></i>${T("潮位曲线")}</span><span><i class="gold"></i>${T("高潮")} / ${T("低潮")}</span></div></section>
+        <section class="panel"><h2>${T("当天高低潮")}</h2><p class="panel-sub">${weekday(selectedDate)} ${T("·")} ${T("美国东部时间")}</p><div class="tide-table">${makeTideEvents(spot,selectedDate)}</div><p class="best-window">${T("最佳出钓窗口")} <b>${bwSel ? bwSel.label : T("暂无")}</b>${bwSel && bwSel.secondLabel ? ` ${T("·")} ${T("次佳")} <b>${bwSel.secondLabel}</b>` : ''} <span style="color:var(--muted)">${T("·")} ${T("潮汐·风浪·气压·鱼口综合")}</span></p></section>
+        <section class="panel"><h2>${T("今天的光照与月相")}</h2><p class="panel-sub">${T("适合安排清晨和傍晚窗口")}</p><div class="sun-moon"><div><span>${T("日出")}</span><b>${timeOnly(daily.sunrise[0])}</b></div><div><span>${T("日落")}</span><b>${timeOnly(daily.sunset[0])}</b></div><div><span>${T("月相")}</span><b>${moonPhase(daily.time[0])}</b></div></div></section>
+        <section class="panel"><h2>${T("鱼口活跃时段")}</h2><p class="panel-sub">${Number(selectedDate.slice(5,7))}${T("月")}${Number(selectedDate.slice(8,10))}${T("日")} ${T("·")} ${moonPhase(selectedDate)} ${T("·")} ${T("天文估算，仅供参考")}</p><div class="sun-moon"><div><span>${T("大咬口")}</span><b>${sol.major[0]}</b></div><div><span>${T("大咬口")}</span><b>${sol.major[1]}</b></div><div><span>${T("小咬口")}</span><b>${sol.minor[0]}</b></div><div><span>${T("小咬口")}</span><b>${sol.minor[1]}</b></div></div></section>
+        <section class="panel season-panel"><h2>${T("时令鱼种参考")}</h2><p class="panel-sub">${Number(selectedDate.slice(5,7))}${T("月")}${Number(selectedDate.slice(8,10))}${T("日")} ${T("·")} ${spotState(spot)} ${T("法规")} ${T("·")} ${T("当天平均海温")} ${Number.isFinite(selectedSea) ? `${n(selectedSea,0)}°F` : T("暂无")}</p><div class="fish-list">${makeFishList(spot,selectedDate)}</div><p class="fish-footnote">${T("根据季节与水温推测，仅供参考。")}${regulationSources()}</p></section>
       </div>
-      <section class="panel"><h2>未来 24 小时</h2><p class="panel-sub">逐小时天气、风、浪、涌浪和海水温度</p><div class="hour-grid">${makeHours(spot,d)}</div></section>
-      <section class="panel"><h2>7 天预报</h2><p class="panel-sub">每日最高 / 最低气温与最大风速</p><div class="forecast">${makeForecast(spot)}</div></section>`;
+      <section class="panel"><h2>${T("未来")} 24 ${T("小时")}</h2><p class="panel-sub">${T("逐小时天气、风、浪、涌浪和海水温度")}</p><div class="hour-grid">${makeHours(spot,d)}</div></section>
+      <section class="panel"><h2>7 ${T("天预报")}</h2><p class="panel-sub">${T("每日最高")} / ${T("最低气温与最大风速")}</p><div class="forecast">${makeForecast(spot)}</div></section>`;
       document.getElementById('home').classList.add('hidden');
       document.getElementById('detail').classList.add('active');
       document.querySelectorAll('.date-chip').forEach(chip => chip.addEventListener('click',() => showDetail(index,Number(chip.dataset.dayIndex),false)));
@@ -1618,6 +1651,10 @@ let DATA=__r.data;
 
     document.getElementById('back').addEventListener('click',showHome);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('detail').classList.contains('active'))showHome();});
+    document.documentElement.lang = LANG === 'en' ? 'en' : 'zh-CN';
+    applyStaticI18n();
+    const __lt = document.getElementById('lang-toggle');
+    if (__lt) { __lt.textContent = LANG === 'en' ? '中文' : 'EN'; __lt.addEventListener('click', () => setLang(LANG === 'en' ? 'zh' : 'en')); }
     __initPublicFeatures();
     renderHome();
   
