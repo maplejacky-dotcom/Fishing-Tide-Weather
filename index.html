@@ -938,7 +938,7 @@ function __initPublicFeatures() {
 }
 
 
-const __CACHE_KEY='fishing_public_live_v4';
+const __CACHE_KEY='fishing_public_live_v5';
 const __CACHE_TTL=3600*1000;
 function __etParts(d){
   const p=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);
@@ -960,10 +960,22 @@ function __readCache(){
 function __saveCache(data,key){
   try{ if(typeof localStorage!=='undefined') localStorage.setItem(__CACHE_KEY,JSON.stringify({savedAt:Date.now(),key,data})); }catch(e){}
 }
-async function __fetchJSON(url){
-  const r=await fetch(url);
-  if(!r.ok) throw new Error('HTTP '+r.status+' '+url);
-  return r.json();
+async function __fetchJSON(url,retries){
+  if(retries===undefined) retries=2;
+  let lastErr=null;
+  for(let a=0;a<=retries;a++){
+    try{
+      const ctl=new AbortController();
+      const to=setTimeout(function(){ctl.abort();},25000);
+      let r;
+      try{ r=await fetch(url,{signal:ctl.signal}); }
+      finally{ clearTimeout(to); }
+      if(!r.ok) throw new Error('HTTP '+r.status+' '+url);
+      return await r.json();
+    }catch(e){ lastErr=e; }
+    if(a<retries) await new Promise(function(res){setTimeout(res,900*(a+1));});
+  }
+  throw lastErr;
 }
 function __noaaURL(station,beginYMD,endYMD,interval){
   const p=new URLSearchParams({product:'predictions',application:'NOS.COOPS.TAC.WL',begin_date:beginYMD,end_date:endYMD,datum:'MLLW',station:station,time_zone:'lst_ldt',units:'english',interval:interval,format:'json'});
@@ -1050,7 +1062,7 @@ async function __loadData(){
   const metas=__pfMetas();
   const key=__pfSpotKey(metas);
   const cache=__readCache();
-  const fresh=cache&&cache.key===key&&(Date.now()-cache.savedAt<__CACHE_TTL);
+  const fresh=cache&&cache.key===key&&(Date.now()-cache.savedAt<__CACHE_TTL)&&cache.data.spots.every(function(x){return x.status==='ok';});
   if(fresh) return {data:cache.data,fromCache:true};
   __showLoading();
   const now=new Date();
@@ -1059,6 +1071,13 @@ async function __loadData(){
   const dayYMD=beginYMD;
   try{
     const results=await Promise.allSettled(metas.map(m=>__fetchSpot(m,beginYMD,endYMD,dayYMD)));
+    const failedIdx=[];
+    results.forEach(function(r,i){ if(r.status==='rejected') failedIdx.push(i); });
+    if(failedIdx.length){
+      await new Promise(function(res){setTimeout(res,1500);});
+      const r2=await Promise.allSettled(failedIdx.map(function(i){return __fetchSpot(metas[i],beginYMD,endYMD,dayYMD);}));
+      r2.forEach(function(r,k){ results[failedIdx[k]]=r; });
+    }
     const spots=results.map((r,i)=>{
       if(r.status==='fulfilled') return r.value;
       const m=metas[i];
