@@ -1,5 +1,5 @@
 /* 钓鱼潮汐天气 PWA service worker：缓存 App 外壳，离线可打开；API 请求走网络（App 自带 localStorage 缓存兜底）。 */
-const CACHE = 'fishing-pwa-v3';
+const CACHE = 'fishing-pwa-v4';
 const SHELL = [
   './',
   './index.html',
@@ -7,8 +7,7 @@ const SHELL = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
-  './public_features.js',
-  './public_features.css'
+  './pwa.js'
 ];
 
 self.addEventListener('install', (e) => {
